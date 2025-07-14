@@ -1,0 +1,337 @@
+/* ==========================================================================
+   STYLE UNTUK APLIKASI JURNAL PEMBELAJARAN
+   Versi: 1.0
+   Deskripsi: Desain modern, bersih, dan responsif.
+   ========================================================================== */
+
+/* === IMPORT FONT & CSS VARIABLES (PALET WARNA) === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #4A90E2; /* Biru yang cerah dan profesional */
+  --primary-dark: #357ABD; /* Biru lebih gelap untuk hover */
+  --success-color: #4CAF50; /* Hijau untuk notifikasi sukses */
+  --error-color: #F44336;   /* Merah untuk notifikasi error */
+  --bg-light: #f4f7f9;     /* Latar belakang body yang sangat terang */
+  --bg-white: #ffffff;     /* Latar belakang container utama */
+  --text-dark: #333333;    /* Warna teks utama */
+  --text-light: #666666;   /* Warna teks sekunder */
+  --border-color: #e0e0e0; /* Warna border untuk input dan tabel */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Efek bayangan yang lembut */
+}
+
+/* === PENGATURAN GLOBAL & DASAR === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+/* === HALAMAN LOGIN === */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#loginForm {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem;
+  background: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+/* === HEADER & NAVIGASI === */
+header {
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  padding: 0 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 70px;
+}
+
+.nav-links a {
+  color: var(--bg-white);
+  text-decoration: none;
+  margin: 0 1rem;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Efek garis bawah yang muncul saat hover */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--bg-white);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#logoutBtn {
+  background-color: var(--error-color);
+  color: white;
+  border: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+#logoutBtn:hover {
+  background-color: #d32f2f; /* Merah lebih gelap */
+}
+
+/* === FORMULIR (INPUT, SELECT, BUTTON) === */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efek glow saat input aktif */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+button {
+  display: inline-block;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--primary-color);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px); /* Efek tombol terangkat */
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* === TABEL DATA === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+thead th {
+  background-color: var(--bg-light);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+tbody tr:hover {
+  background-color: #eaf2fa; /* Warna biru sangat terang saat hover */
+}
+
+/* === NOTIFIKASI & LOADING (Elemen UI Interaktif) === */
+
+/* Kotak pesan yang muncul di atas */
+#message-box {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  display: none;
+  animation: slideDown 0.5s ease forwards;
+}
+
+#message-box.success {
+  background-color: var(--success-color);
+}
+
+#message-box.error {
+  background-color: var(--error-color);
+}
+
+/* Indikator Loading dengan Spinner */
+#loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#loading-indicator::after {
+    content: '';
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* === ANIMASI === */
+
+/* Animasi untuk pesan notifikasi */
+@keyframes slideDown {
+  from {
+    top: -100px;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
+}
+
+/* Animasi untuk spinner loading */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* === DESAIN RESPONSIVE UNTUK MOBILE === */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem;
+  }
+  
+  .nav-links {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  tr { border: 1px solid var(--border-color); margin-bottom: 1rem; }
+  
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+  }
+  
+  td:before {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  /* Label untuk data tabel di mobile */
+  td:nth-of-type(1):before { content: "NISN"; }
+  td:nth-of-type(2):before { content: "Nama"; }
+  td:nth-of-type(3):before { content: "Kehadiran"; }
+  /* Sesuaikan label ini untuk tabel rekap yang lebih banyak kolomnya */
+
+}
