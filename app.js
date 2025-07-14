@@ -2,15 +2,13 @@
  * =================================================================
  * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI LENGKAP & STABIL)
  * =================================================================
- * @version 3.1 - Implementasi penuh semua fungsionalitas.
+ * @version 3.2 - Perbaikan Sistem Login
  * @author Gemini AI Expert for User
  *
  * PERUBAHAN UTAMA:
- * - [URL BARU] Menggunakan URL Web App yang telah disediakan.
- * - [IMPLEMENTASI] Fungsi untuk memuat siswa ke tabel presensi.
- * - [IMPLEMENTASI] Fungsi untuk mengumpulkan dan mengirim data Jurnal + Presensi.
- * - [IMPLEMENTASI] Fungsi untuk memuat, menampilkan, dan melihat detail Riwayat Jurnal.
- * - Kode ini dirancang untuk bekerja secara optimal dengan backend yang telah dibuat.
+ * - [KEAMANAN] Fungsi handleLogin() diperbaiki untuk mengirim password mentah (plain text)
+ *   ke backend yang aman, sesuai dengan update sistem otentikasi.
+ * - [KEAMANAN] Ketergantungan pada CryptoJS untuk hashing di frontend dihapus.
  */
 
 // ====================================================================
@@ -18,7 +16,7 @@
 // ====================================================================
 
 // URL WEB APP YANG SUDAH TERBUKTI STABIL
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZAZezsq3q_KSaBv6AqVurfghjjST5asILTu2iILP3bpnGLkL8b6joNQ0zZoZoH5DksQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrJt-Bbrut68IQrTfGU0VSYUxEIS5lNFQ6qddtYoG-e9bvr3UXA3b9OR0hcSJqJa38kg/exec";
 
 // --- STATE APLIKASI & CACHE ---
 let cachedSiswaData = [];
@@ -92,6 +90,10 @@ function checkAuthentication() {
     }
 }
 
+/**
+ * [DIPERBAIKI] Fungsi ini sekarang mengirimkan password mentah ke backend.
+ * Hashing di sisi klien (menggunakan CryptoJS) telah dihapus.
+ */
 async function handleLogin() {
     const usernameEl = document.getElementById('username');
     const passwordEl = document.getElementById('password');
@@ -100,11 +102,16 @@ async function handleLogin() {
         return showStatusMessage("Username dan password harus diisi.", 'error');
     }
     showLoading(true);
-    const passwordHash = CryptoJS.SHA256(passwordEl.value).toString();
+    
+    // Hashing di sisi klien dihapus
+    // const passwordHash = CryptoJS.SHA256(passwordEl.value).toString(); 
+    
     const formData = new FormData();
     formData.append('action', 'login');
     formData.append('username', usernameEl.value);
-    formData.append('passwordHash', passwordHash);
+    
+    // Mengirim password mentah dengan key "password" agar sesuai dengan backend baru
+    formData.append('password', passwordEl.value);
 
     try {
         const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
@@ -113,6 +120,7 @@ async function handleLogin() {
             sessionStorage.setItem('loggedInUser', JSON.stringify(result.data));
             window.location.href = 'dashboard.html';
         } else {
+            // Menampilkan pesan error yang dikirim dari backend (misal: "Username atau Password salah.")
             showStatusMessage(result.message, 'error');
         }
     } catch (error) {
