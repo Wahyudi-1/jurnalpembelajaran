@@ -2,7 +2,7 @@
  * =================================================================
  * CSS UTAMA - JURNAL ONLINE (VERSI 3.0)
  * =================================================================
- * @version 3.0 - Unified styles for all features, including the new login page and user management.
+ * @version 3.1 - Added password toggle styles.
  * @author Gemini AI Expert for User
  *
  * Struktur File:
@@ -320,17 +320,17 @@ tbody tr:hover {
    ----------------------------------------------------------------- */
    
 /* Kontainer Riwayat Jurnal */
-#riwayatContainer {
+.riwayat-grid { /* Ganti nama dari #riwayatContainer ke kelas */
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
 }
 
-#riwayatContainer .card {
+.riwayat-grid .card {
     border-left: 4px solid transparent;
 }
 
-#riwayatContainer .card:hover {
+.riwayat-grid .card:hover {
     border-left-color: var(--primary-color);
     transform: translateY(-4px) scale(1.02);
     box-shadow: var(--shadow-hover);
@@ -343,6 +343,34 @@ tbody tr:hover {
     margin-top: 5px;
     display: inline-block;
 }
+
+/* [BARU] Style untuk toggle password */
+.password-wrapper {
+    position: relative;
+}
+
+.toggle-password-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+    padding-right: 45px;
+}
+
+.toggle-password-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
 
 /* -----------------------------------------------------------------
    6. UTILITIES (PESAN NOTIFIKASI, LOADING SPINNER)
@@ -410,12 +438,12 @@ tbody tr:hover {
 /* Untuk Mobile */
 @media (max-width: 767px) {
     /* Layout Form Grid menjadi 1 kolom */
-    .form-grid { 
+    .form-container { /* Ganti dari .form-grid ke .form-container */
         display: grid; 
         grid-template-columns: 1fr; 
         gap: 0 1.5rem; /* Hanya gap kolom, tidak ada gap baris */
     }
-    .form-grid .form-group-full { 
+    .form-container .form-group-full { 
         grid-column: 1 / -1; 
     }
 
