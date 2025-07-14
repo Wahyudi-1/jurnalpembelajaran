@@ -11,7 +11,7 @@
 // -----------------------------------------------------------------
 // KONFIGURASI UTAMA
 // -----------------------------------------------------------------
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxNColmRCCbh9TbVVk62cdgGxXvTQpTB9Wp2K3x05KWvCs61WDI2ECGyT_kQAEOL7z6/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCRYojCLqSNRWKOUdAsqaFTuc00qPRdeJU4NbIuXYHznCsedtP2nd1zWMJZeHcbnBx/exec";
 
 // -----------------------------------------------------------------
 // FUNGSI API HELPER (Untuk Komunikasi dengan Backend)
