@@ -3,71 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Jurnal Pembelajaran</title>
+    <title>Login - Jurnal Online</title>
 
     <!-- 1. Google Fonts (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- 2. Link ke file CSS Anda (Gunakan path yang benar) -->
+    <!-- 2. Link ke file CSS Anda -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- [BARU] Menambahkan Favicon untuk tampilan profesional di tab browser -->
+    <!-- 3. Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 </head>
 
-<body class="login-page">
+<!-- [DIUBAH] Menggunakan class baru untuk layout yang berbeda -->
+<body class="login-page-v2">
 
-    <div class="login-container">
-        
-        <h2 class="logo" style="margin-bottom: 10px;">Jurnal Online</h2>
-        <p style="margin-bottom: 25px; color: var(--text-light);">Silakan masuk untuk melanjutkan</p>
-        
-        <!-- 
-            Form Login
-            - ID dari setiap elemen (input, button) harus cocok 
-              dengan yang digunakan di file app.js
-            - 'autocomplete' ditambahkan untuk pengalaman pengguna yang lebih baik
-        -->
-        <form onsubmit="event.preventDefault(); document.getElementById('loginButton').click();">
-            <div class="form-group">
-                <input type="text" id="username" placeholder="Username" required autocomplete="username">
+    <div class="login-box">
+        <!-- Bagian Ilustrasi -->
+        <div class="login-illustration">
+            <div class="illustration-content">
+                <svg width="200" height="200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 19.5C4 18.1193 5.11929 17 6.5 17H17.5C18.8807 17 20 18.1193 20 19.5V21.5H4V19.5Z" fill="#a8c7fa"/>
+                    <path d="M12 14C14.2091 14 16 12.2091 16 10C16 7.79086 14.2091 6 12 6C9.79086 6 8 7.79086 8 10C8 12.2091 9.79086 14 12 14Z" fill="#a8c7fa"/>
+                    <path d="M2 7C2 5.89543 2.89543 5 4 5H7C7.55228 5 8 4.55228 8 4C8 3.44772 7.55228 3 7 3H4C1.79086 3 0 4.79086 0 7V17C0 17.5523 0.447715 18 1 18C1.55228 18 2 17.5523 2 17V7Z" fill="#4a90e2"/>
+        <path d="M22 7V17C22 17.5523 22.4477 18 23 18C23.5523 18 24 17.5523 24 17V7C24 4.79086 22.2091 3 20 3H17C16.4477 3 16 3.44772 16 4C16 4.55228 16.4477 5 17 5H20C21.1046 5 22 5.89543 22 7Z" fill="#4a90e2"/>
+                </svg>
+                <h3>Selamat Datang Kembali!</h3>
+                <p>Akses cepat dan mudah untuk mengelola jurnal pembelajaran Anda.</p>
             </div>
-            
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
-            </div>
-            
-            <div class="form-group">
-                <button type="button" id="loginButton" class="btn btn-primary btn-block">Login</button>
-            </div>
-        </form>
+        </div>
         
-        <!-- 
-            Elemen untuk Feedback Pengguna dari JavaScript
-            Diposisikan di luar form agar tidak terpengaruh oleh event submit.
-        -->
-        <div id="statusMessage" class="status-message" style="display: none; margin-top: 15px;"></div>
-        
+        <!-- Bagian Form Login -->
+        <div class="login-form-container">
+            <div class="login-form-content">
+                <h2 class="logo">Jurnal Online</h2>
+                <p style="color: var(--text-light); margin-bottom: 25px;">Silakan masuk untuk melanjutkan</p>
+                
+                <form onsubmit="event.preventDefault(); document.getElementById('loginButton').click();">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Masukkan username Anda" required autocomplete="username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Masukkan password Anda" required autocomplete="current-password">
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <button type="button" id="loginButton" class="btn btn-primary btn-block">Login</button>
+                    </div>
+                </form>
+                
+                <div id="statusMessage" class="status-message" style="display: none; margin-top: 15px;"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- 
-        Overlay loading spinner yang akan muncul saat proses login.
-        Diletakkan di luar container utama agar bisa menutupi seluruh halaman.
-    -->
+    <!-- Overlay loading spinner (tidak berubah) -->
     <div id="loadingIndicator" class="loading-overlay" style="display: none;">
         <div class="spinner"></div>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- JavaScript (Wajib diletakkan di akhir body)                -->
-    <!-- ========================================================== -->
-
-    <!-- Library eksternal untuk hashing password (wajib ada sebelum app.js) -->
+    <!-- JavaScript (tidak berubah) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-    
-    <!-- Script utama aplikasi Anda (Gunakan path yang benar) -->
     <script src="app.js"></script>
 
 </body>
