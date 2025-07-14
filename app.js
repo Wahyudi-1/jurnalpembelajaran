@@ -16,7 +16,7 @@
 // TAHAP 1: KONFIGURASI GLOBAL DAN STATE APLIKASI
 // ====================================================================
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQIrQqmYCS6F4xJMJzYK9_rab1Ppi0GIdtBB_1CT_ZmgyoO41TiKA3lq0sdHAcIToXgg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGsW5YM6hvRQPSffqMAr-hlsdC0T-c2FZ6Poce3ZF45YscfMgVFMelzkjyRBo1OQH5iw/exec";
 
 // --- STATE APLIKASI & CACHE ---
 let appCache = {
