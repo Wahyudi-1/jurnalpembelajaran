@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Jurnal Pembelajaran</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link ke file CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+
+    <div class="login-container">
+        <h2>Jurnal Pembelajaran Online</h2>
+        <p style="margin-bottom: 25px; color: #666;">Silakan masuk untuk melanjutkan</p>
+        
+        <!-- Form Login -->
+        <div class="form-group">
+            <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+        
+        <!-- Tombol Login -->
+        <div class="form-group">
+            <button id="loginButton" class="btn btn-primary btn-block">Login</button>
+        </div>
+        
+        <!-- Area untuk menampilkan pesan error atau loading -->
+        <div id="statusMessage" style="margin-top: 15px;"></div>
+        <div id="loadingIndicator">Loading...</div>
+    </div>
+
+    <!-- Library untuk hashing password -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <!-- Script utama aplikasi Anda -->
+    <script src="js/app.js"></script>
+
+</body>
+</html>
