@@ -1,23 +1,22 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL ONLINE (VERSI 4.0 - OPTIMIZED)
+ * SCRIPT UTAMA FRONTEND - JURNAL ONLINE (VERSI 5.0 - FINAL)
  * =================================================================
- * @version 4.0 - Clean Code, Bug Fixes & Client-side Caching.
+ * @version 5.0 - Final, Clean Code, Caching, Synced with Backend v2.0
  * @author Gemini AI Expert for User
  *
  * FITUR & PERBAIKAN UTAMA:
- * - [FIX] Semua pemanggilan GET request disesuaikan dengan format backend (`?namaFungsi=true`).
- * - [FIX] Logika pengiriman data form (Manajemen Siswa) telah diperbaiki untuk validitas data.
- * - [OPTIMASI] Implementasi client-side caching untuk mengurangi request berulang ke server.
- *   Data seperti filter, daftar siswa, dan daftar pengguna hanya akan di-load sekali per sesi.
- * - Kode disusun ulang agar lebih bersih, mudah dibaca, dan efisien.
+ * - [UPDATE] Menggunakan URL Web App terbaru yang telah disediakan.
+ * - [SINKRON] Semua request GET dan POST disesuaikan dengan router backend terbaru.
+ * - [OPTIMASI] Client-side caching diimplementasikan untuk data statis (filter, siswa, pengguna).
+ * - [UI/UX] Logika event listener dan pembaruan UI disempurnakan untuk pengalaman yang lebih mulus.
  */
 
 // ====================================================================
 // TAHAP 1: KONFIGURASI GLOBAL DAN STATE APLIKASI
 // ====================================================================
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMYelEcD482DsmpyfHG0uAZMBXFS4tAKzFjvckzHJiib9P1KgFWnenMU3h_WDsUi41Gw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQIrQqmYCS6F4xJMJzYK9_rab1Ppi0GIdtBB_1CT_ZmgyoO41TiKA3lq0sdHAcIToXgg/exec";
 
 // --- STATE APLIKASI & CACHE ---
 let appCache = {
@@ -75,7 +74,7 @@ function showSection(sectionId) {
 // TAHAP 3: FUNGSI-FUNGSI UTAMA
 // ====================================================================
 
-// --- 3.1. OTENTIKASI & SESI ---
+// --- 3.1 OTENTIKASI & SESI ---
 function checkAuthentication() {
     const user = sessionStorage.getItem('loggedInUser');
     if (!user) {
@@ -99,7 +98,6 @@ function checkAuthentication() {
 }
 
 async function handleLogin() {
-    // ... (Fungsi ini sudah benar dan tidak perlu diubah) ...
     const usernameEl = document.getElementById('username');
     const passwordEl = document.getElementById('password');
 
@@ -136,10 +134,9 @@ function handleLogout() {
     }
 }
 
-// --- 3.2. DASHBOARD & DATA GLOBAL (DENGAN CACHING) ---
+// --- 3.2 DATA GLOBAL & DASHBOARD (DENGAN CACHING) ---
 async function populateAllFilters() {
     if (appCache.filterOptions) {
-        // Gunakan data dari cache jika tersedia
         const { tahunAjaran, kelas, mataPelajaran } = appCache.filterOptions;
         populateDropdown('filterTahunAjaran', tahunAjaran, '-- Pilih Tahun Ajaran --');
         populateDropdown('filterKelas', kelas, '-- Pilih Kelas --');
@@ -153,8 +150,8 @@ async function populateAllFilters() {
         const response = await fetch(`${SCRIPT_URL}?getFilterOptions=true`);
         const result = await response.json();
         if (result.status === 'success') {
-            appCache.filterOptions = result.data; // Simpan ke cache
-            populateAllFilters(); // Panggil lagi untuk mempopulasi dari cache
+            appCache.filterOptions = result.data;
+            populateAllFilters();
         }
     } catch (error) {
         console.error("Gagal memuat filter:", error);
@@ -175,14 +172,14 @@ async function loadDashboardStats() {
     }
 }
 
-// --- 3.3. MANAJEMEN SISWA (DENGAN CACHING & PENCARIAN) ---
+// --- 3.3 MANAJEMEN SISWA (DENGAN CACHING & PENCARIAN) ---
 async function loadAndCacheAllSiswa() {
     showLoading(true);
     try {
         const response = await fetch(`${SCRIPT_URL}?searchSiswa=true&searchTerm=`);
         const result = await response.json();
         if (result.status === 'success') {
-            appCache.allSiswa = result.data; // Simpan semua data siswa ke cache
+            appCache.allSiswa = result.data;
         } else {
             document.getElementById('siswaResultsTableBody').innerHTML = `<tr><td colspan="5">Gagal memuat: ${result.message}</td></tr>`;
         }
@@ -195,7 +192,6 @@ async function loadAndCacheAllSiswa() {
 
 function searchSiswa() {
     if (!appCache.allSiswa) {
-        // Jika cache kosong, ambil data dari server dulu
         loadAndCacheAllSiswa().then(() => searchSiswa());
         return;
     }
@@ -203,16 +199,15 @@ function searchSiswa() {
     const searchTerm = document.getElementById('nisnSearchInput').value.toLowerCase();
     const filteredData = searchTerm
         ? appCache.allSiswa.filter(siswa => 
-            siswa.NISN.toString().includes(searchTerm) || 
+            String(siswa.NISN).includes(searchTerm) || 
             siswa.Nama.toLowerCase().includes(searchTerm)
           )
-        : appCache.allSiswa; // Tampilkan semua jika search term kosong
+        : appCache.allSiswa;
 
     renderSiswaTable(filteredData);
 }
 
 function renderSiswaTable(siswaArray) {
-    // ... (Fungsi ini sudah benar dan tidak perlu diubah) ...
     const tableBody = document.getElementById('siswaResultsTableBody');
     tableBody.innerHTML = '';
     if (siswaArray.length === 0) {
@@ -224,7 +219,7 @@ function renderSiswaTable(siswaArray) {
         tr.innerHTML = `
             <td data-label="NISN">${siswa.NISN}</td>
             <td data-label="Nama">${siswa.Nama}</td>
-            <td data-label="Kelas">${siswa.Kelas}</td>
+            <td data-label="Kelas">${siswa.Kelas || ''}</td>
             <td data-label="Tahun Ajaran">${siswa.TahunAjaran || ''}</td>
             <td data-label="Aksi">
                 <button class="btn btn-sm btn-secondary" onclick="editSiswaHandler('${siswa.NISN}')">Ubah</button>
@@ -238,7 +233,6 @@ function renderSiswaTable(siswaArray) {
 async function saveSiswa() {
     const formSiswa = document.getElementById('formSiswa');
     if (!formSiswa) return;
-
     const formData = new FormData(formSiswa);
 
     if (!formData.get('nisn') || !formData.get('nama')) {
@@ -276,11 +270,9 @@ function editSiswaHandler(nisn) {
     document.getElementById('formNama').value = siswa.Nama;
     document.getElementById('formKelas').value = siswa.Kelas;
     document.getElementById('formTahunAjaran').value = siswa.TahunAjaran;
-    document.getElementById('formMapel').value = Array.isArray(siswa.MataPelajaran) ? siswa.MataPelajaran.join(', ') : (siswa.MataPelajaran || '');
+    document.getElementById('formMapel').value = siswa.MataPelajaran || '';
     document.getElementById('formNisnOld').value = siswa.NISN;
-
-    const saveButton = document.getElementById('saveSiswaButton');
-    saveButton.textContent = 'Update Data Siswa';
+    document.getElementById('saveSiswaButton').textContent = 'Update Data Siswa';
     document.getElementById('formSiswa').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -291,7 +283,6 @@ function resetFormSiswa() {
 }
 
 async function deleteSiswaHandler(nisn) {
-    // ... (Fungsi ini sudah benar, hanya perlu menghapus cache setelah sukses) ...
     if (confirm(`Apakah Anda yakin ingin menghapus siswa dengan NISN: ${nisn}?`)) {
         showLoading(true);
         const formData = new FormData();
@@ -302,8 +293,8 @@ async function deleteSiswaHandler(nisn) {
             const result = await response.json();
             if (result.status === 'success') {
                 showStatusMessage(result.message, 'success');
-                appCache.allSiswa = null; // Hapus cache
-                searchSiswa(); // Muat ulang
+                appCache.allSiswa = null;
+                searchSiswa();
             } else {
                 showStatusMessage(`Gagal menghapus: ${result.message}`, 'error');
             }
@@ -315,16 +306,13 @@ async function deleteSiswaHandler(nisn) {
     }
 }
 
-// --- 3.4. INPUT JURNAL & PRESENSI ---
+// --- 3.4 INPUT JURNAL & PRESENSI ---
 async function loadSiswaForPresensi() {
-    // ... (Fungsi ini tidak perlu caching karena tergantung filter) ...
     const kelas = document.getElementById('filterKelas').value;
     const tahunAjaran = document.getElementById('filterTahunAjaran').value;
     const tableBody = document.getElementById('presensiTableBody');
-
-    if (!kelas || !tahunAjaran) {
-        return showStatusMessage('Pilih Tahun Ajaran dan Kelas terlebih dahulu.', 'info');
-    }
+    if (!kelas || !tahunAjaran) return showStatusMessage('Pilih Tahun Ajaran dan Kelas terlebih dahulu.', 'info');
+    
     showLoading(true);
     tableBody.innerHTML = '<tr><td colspan="3">Memuat data siswa...</td></tr>';
     try {
@@ -336,19 +324,11 @@ async function loadSiswaForPresensi() {
                 const tr = document.createElement('tr');
                 tr.dataset.nisn = siswa.NISN;
                 tr.dataset.nama = siswa.Nama;
-                tr.innerHTML = `
-                    <td data-label="NISN">${siswa.NISN}</td>
-                    <td data-label="Nama">${siswa.Nama}</td>
-                    <td data-label="Kehadiran">
-                        <select class="kehadiran-status" style="width:100%; padding: 0.5rem;">
-                            <option value="Hadir" selected>Hadir</option><option value="Sakit">Sakit</option><option value="Izin">Izin</option><option value="Alfa">Alfa</option>
-                        </select>
-                    </td>
-                `;
+                tr.innerHTML = `<td data-label="NISN">${siswa.NISN}</td><td data-label="Nama">${siswa.Nama}</td><td data-label="Kehadiran"><select class="kehadiran-status" style="width:100%; padding: 0.5rem;"><option value="Hadir" selected>Hadir</option><option value="Sakit">Sakit</option><option value="Izin">Izin</option><option value="Alfa">Alfa</option></select></td>`;
                 tableBody.appendChild(tr);
             });
         } else {
-            tableBody.innerHTML = '<tr><td colspan="3">Tidak ada siswa yang ditemukan untuk kelas dan tahun ajaran ini.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="3">Tidak ada siswa yang ditemukan untuk filter ini.</td></tr>';
         }
     } catch (error) {
         showStatusMessage('Gagal memuat siswa: ' + error.message, 'error');
@@ -358,7 +338,6 @@ async function loadSiswaForPresensi() {
 }
 
 async function submitJurnal() {
-    // ... (Fungsi ini sudah benar dan tidak perlu diubah) ...
     const detailJurnal = {
         tahunAjaran: document.getElementById('filterTahunAjaran').value,
         kelas: document.getElementById('filterKelas').value,
@@ -396,9 +375,9 @@ async function submitJurnal() {
     }
 }
 
-// --- 3.5. RIWAYAT JURNAL ---
+
+// --- 3.5 RIWAYAT JURNAL ---
 async function loadRiwayatJurnal() {
-    // ... (Fungsi ini tidak perlu caching karena tergantung filter) ...
     const kelas = document.getElementById('riwayatFilterKelas').value;
     const mapel = document.getElementById('riwayatFilterMapel').value;
     const container = document.getElementById('riwayatContainer');
@@ -410,15 +389,14 @@ async function loadRiwayatJurnal() {
         const result = await response.json();
         container.innerHTML = '';
         if (result.status === 'success' && result.data.length > 0) {
-            // ... (Kode rendering kartu riwayat sudah benar) ...
             result.data.forEach(jurnal => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<div class="card-header" style="padding-bottom: 0.5rem; margin-bottom: 0.5rem;">${jurnal.MataPelajaran} - ${jurnal.Kelas}</div> ...`;
+                card.innerHTML = `<div class="card-header" style="padding-bottom: 0.5rem; margin-bottom: 0.5rem;">${jurnal.MataPelajaran} - ${jurnal.Kelas}</div><small style="color: var(--text-light);">${new Date(jurnal.Tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</small><p style="margin-top: 10px; font-size: 0.9rem;"><strong>Materi:</strong> ${jurnal.Materi.substring(0, 100)}...</p><p style="font-size: 0.9rem;"><strong>Hadir:</strong> ${jurnal.presensi.filter(p => p.Status === 'Hadir').length}/${jurnal.presensi.length} siswa</p><button class="btn btn-sm btn-secondary" style="margin-top: 10px;" onclick="showJurnalDetail('${jurnal.ID}')">Lihat Detail</button>`;
                 container.appendChild(card);
             });
         } else {
-            container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Tidak ada riwayat jurnal yang ditemukan.</p>';
+            container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Tidak ada riwayat jurnal ditemukan.</p>';
         }
     } catch(error) {
         showStatusMessage('Gagal memuat riwayat: ' + error.message, 'error');
@@ -427,7 +405,7 @@ async function loadRiwayatJurnal() {
     }
 }
 
-// --- 3.6. MANAJEMEN PENGGUNA (DENGAN CACHING) ---
+// --- 3.6 MANAJEMEN PENGGUNA (DENGAN CACHING) ---
 async function loadUsers() {
     if (appCache.allUsers) {
         renderUsersTable(appCache.allUsers);
@@ -453,11 +431,10 @@ async function loadUsers() {
 }
 
 function renderUsersTable(usersArray) {
-    // ... (Fungsi ini sudah benar dan tidak perlu diubah) ...
     const tableBody = document.getElementById('tabelPenggunaBody');
     tableBody.innerHTML = '';
     if (!usersArray || usersArray.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="4">Tidak ada data pengguna yang ditemukan.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4">Tidak ada data pengguna.</td></tr>';
         return;
     }
     usersArray.sort((a, b) => a.Nama.localeCompare(b.Nama)).sort((a,b) => (a.Peran === 'Admin' ? -1 : 1));
@@ -472,14 +449,15 @@ function renderUsersTable(usersArray) {
 }
 
 async function saveUser() {
-    // ... (Fungsi ini sudah benar, hanya perlu menghapus cache setelah sukses) ...
+    const formData = new FormData(document.getElementById('formPengguna'));
+    const password = formData.get('passwordPengguna');
     const oldUsername = document.getElementById('editUsername').value;
     const action = oldUsername ? 'updateUser' : 'addUser';
-    const formData = new FormData(document.getElementById('formPengguna'));
+    
     formData.append('action', action);
     if (oldUsername) formData.append('oldUsername', oldUsername);
-    if (formData.get('password')) formData.set('passwordHash', CryptoJS.SHA256(formData.get('password')).toString());
-    formData.delete('password');
+    if (password) formData.append('passwordHash', CryptoJS.SHA256(password).toString());
+    formData.delete('passwordPengguna'); // Hapus field asli agar tidak terkirim
 
     showLoading(true);
     try {
@@ -488,8 +466,8 @@ async function saveUser() {
         if (result.status === 'success') {
             showStatusMessage(result.message, 'success');
             resetFormPengguna();
-            appCache.allUsers = null; // Hapus cache
-            loadUsers(); // Muat ulang
+            appCache.allUsers = null;
+            loadUsers();
         } else {
             showStatusMessage(`Gagal: ${result.message}`, 'error');
         }
@@ -522,7 +500,6 @@ function resetFormPengguna() {
 }
 
 async function deleteUserHandler(username) {
-    // ... (Fungsi ini sudah benar, hanya perlu menghapus cache setelah sukses) ...
     if (confirm(`Anda yakin ingin menghapus pengguna: ${username}?`)) {
         showLoading(true);
         const formData = new FormData();
@@ -533,8 +510,8 @@ async function deleteUserHandler(username) {
             const result = await response.json();
             if (result.status === 'success') {
                 showStatusMessage(result.message, 'success');
-                appCache.allUsers = null; // Hapus cache
-                loadUsers(); // Muat ulang
+                appCache.allUsers = null;
+                loadUsers();
             } else {
                 showStatusMessage(`Gagal menghapus: ${result.message}`, 'error');
             }
@@ -545,7 +522,6 @@ async function deleteUserHandler(username) {
         }
     }
 }
-
 
 // ====================================================================
 // TAHAP 4: INISIALISASI DAN EVENT LISTENERS
@@ -560,25 +536,29 @@ function setupDashboardListeners() {
             button.classList.add('active');
             const sectionId = button.dataset.section;
             showSection(sectionId);
-            // Panggil fungsi pemuat data saat tab diaktifkan
             if (sectionId === 'riwayatSection') loadRiwayatJurnal();
             else if (sectionId === 'penggunaSection') loadUsers();
             else if (sectionId === 'siswaSection') searchSiswa();
         });
     });
 
-    // Event Listeners for Forms
     document.getElementById('loadSiswaButton')?.addEventListener('click', loadSiswaForPresensi);
     document.getElementById('submitJurnalButton')?.addEventListener('click', submitJurnal);
     document.getElementById('filterRiwayatButton')?.addEventListener('click', loadRiwayatJurnal);
     document.getElementById('saveSiswaButton')?.addEventListener('click', saveSiswa);
     document.getElementById('resetSiswaButton')?.addEventListener('click', resetFormSiswa);
     document.getElementById('searchButton')?.addEventListener('click', searchSiswa);
-    document.getElementById('exportSiswaExcel')?.addEventListener('click', () => XLSX.utils.table_to_book(document.querySelector("#siswaSection table"), { sheet: "Daftar Siswa" }) && XLSX.writeFile(XLSX.utils.table_to_book(document.querySelector("#siswaSection table"), { sheet: "Daftar Siswa" }), "Daftar_Siswa.xlsx"));
+    document.getElementById('exportSiswaExcel')?.addEventListener('click', () => {
+        const table = document.querySelector("#siswaSection table");
+        if (table) {
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Daftar Siswa" });
+            XLSX.writeFile(wb, "Daftar_Siswa.xlsx");
+        }
+    });
     document.getElementById('simpanPenggunaButton')?.addEventListener('click', saveUser);
     document.getElementById('batalEditPenggunaButton')?.addEventListener('click', resetFormPengguna);
 
-    document.getElementById('nisnSearchInput')?.addEventListener('keyup', (e) => {
+    document.getElementById('nisnSearchInput')?.addEventListener('keyup', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(searchSiswa, 400);
     });
