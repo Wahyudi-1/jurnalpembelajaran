@@ -1,15 +1,14 @@
 /**
  * =================================================================
- * CSS UTAMA - JURNAL PEMBELAJARAN (VERSI LENGKAP)
+ * CSS UTAMA - JURNAL PEMBELAJARAN (VERSI TANPA LOGIN)
  * =================================================================
- * @version 2.2 - Enhanced with styles for new features & UI polish
+ * @version 2.3 - Simplified for no-login access.
  * @author Gemini AI Expert for User
  *
  * Perbaikan utama:
- * - [BARU] Style untuk kartu riwayat jurnal agar lebih informatif.
- * - [BARU] Style untuk tombol aksi kecil (edit, hapus) di dalam tabel.
- * - [BARU] Style untuk tombol reset/batal.
- * - [BARU] Style untuk overlay modal (persiapan untuk detail jurnal yang lebih canggih).
+ * - [DIHAPUS] Semua style untuk halaman login.
+ * - [DIPERBAIKI] Tampilan dropdown <select> agar konsisten dan modern.
+ * - [DIPERBAIKI] Style untuk elemen <hr> agar lebih elegan.
  * - Penambahan transisi halus pada beberapa elemen untuk UX yang lebih baik.
  */
 
@@ -77,7 +76,7 @@ header .logo {
     border-bottom: 1px solid var(--border-color);
     text-align: center;
     position: sticky;
-    top: 70px; /* Sesuaikan dengan tinggi header Anda */
+    top: 62px; /* Disesuaikan dengan tinggi header */
     z-index: 99;
 }
 
@@ -95,6 +94,7 @@ header .logo {
 .section-nav button:hover {
     color: var(--primary-dark);
     transform: none;
+    box-shadow: none;
 }
 .section-nav button.active {
     color: var(--primary-color);
@@ -113,31 +113,7 @@ main {
 }
 
 /* -----------------------------------------------------------------
-   3. HALAMAN LOGIN
-   ----------------------------------------------------------------- */
-.login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-.login-container {
-    width: 100%;
-    max-width: 400px;
-    background: var(--white-color);
-    padding: 40px 30px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    text-align: center;
-}
-.login-container h2 {
-    margin-bottom: 25px;
-}
-
-/* -----------------------------------------------------------------
-   4. KOMPONEN UTAMA (KARTU, FORM, TOMBOL, TABEL)
+   3. KOMPONEN UTAMA (KARTU, FORM, TOMBOL, TABEL)
    ----------------------------------------------------------------- */
 .card {
     background: var(--white-color);
@@ -148,11 +124,9 @@ main {
     transition: box-shadow var(--transition-speed), transform var(--transition-speed);
 }
 .card:hover {
-    /* [BARU] Efek hover halus pada kartu */
     transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
 }
-
 
 .card-header {
     padding-bottom: 1rem;
@@ -172,15 +146,21 @@ main {
     color: var(--text-light);
 }
 
-input, select, textarea {
+input[type="text"],
+input[type="date"],
+input[type="number"],
+textarea,
+select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     font-family: var(--font-family);
     font-size: 1rem;
+    background-color: var(--white-color);
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
+
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--primary-color);
@@ -188,6 +168,27 @@ input:focus, select:focus, textarea:focus {
 }
 
 textarea { resize: vertical; min-height: 100px; }
+
+/* [DIPERBAIKI] Tampilan dropdown kustom */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 2.5rem; /* Ruang untuk panah kustom */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    cursor: pointer;
+}
+
+
+/* [DIPERBAIKI] Style untuk garis pemisah */
+hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0;
+}
 
 /* Tombol (Button) */
 .btn {
@@ -226,7 +227,6 @@ textarea { resize: vertical; min-height: 100px; }
 .btn-secondary:hover { background-color: #e9ecef; }
 .btn-block { width: 100%; display: block; }
 
-/* [BARU] Tombol aksi kecil untuk tabel (edit/hapus) */
 .btn-sm {
     padding: 0.25rem 0.6rem;
     font-size: 0.875rem;
@@ -242,28 +242,36 @@ th { font-weight: 600; color: var(--text-light); }
 tbody tr { transition: background-color var(--transition-speed); }
 tbody tr:hover { background-color: var(--secondary-color); }
 
-/* [BARU] Style untuk kontainer riwayat */
+/* [BARU] Style untuk pesan saat tabel kosong */
+.table-empty-message {
+    text-align: center;
+    color: var(--text-light);
+    padding: 2rem;
+    font-style: italic;
+}
+
+
 #riwayatContainer {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
 }
+#riwayatContainer .card {
+    border-left: 4px solid transparent;
+    transition: all var(--transition-speed);
+}
 #riwayatContainer .card:hover {
-    border-left: 4px solid var(--primary-color);
+    border-left-color: var(--primary-color);
     transform: translateY(-4px) scale(1.02);
     box-shadow: var(--shadow-hover);
 }
-#riwayatContainer .card {
-    border-left: 4px solid transparent;
-}
-
 
 /* -----------------------------------------------------------------
-   5. UTILITIES (Pesan Notifikasi, Loading Spinner, Modal)
+   4. UTILITIES (Pesan Notifikasi, Loading Spinner)
    ----------------------------------------------------------------- */
 .status-message {
     padding: 1rem;
-    margin: 0 1.5rem 1.5rem 1.5rem;
+    margin: 0 0 1.5rem 0; /* Disesuaikan untuk main container */
     border-radius: var(--border-radius);
     display: none;
     border: 1px solid transparent;
@@ -303,7 +311,7 @@ tbody tr:hover { background-color: var(--secondary-color); }
 }
 
 /* -----------------------------------------------------------------
-   6. RESPONSIVE DESIGN
+   5. RESPONSIVE DESIGN
    ----------------------------------------------------------------- */
 @media (min-width: 768px) {
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -311,13 +319,15 @@ tbody tr:hover { background-color: var(--secondary-color); }
 }
 
 @media (max-width: 767px) {
-    /* Buat navigasi SPA lebih ramah mobile */
     .section-nav {
         overflow-x: auto;
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
         padding: 0.5rem 0;
     }
+    .section-nav::-webkit-scrollbar { display: none; } /* Sembunyikan scrollbar */
+    .section-nav { -ms-overflow-style: none; scrollbar-width: none; } /* Sembunyikan scrollbar */
+
     .section-nav button {
         display: inline-block;
         margin: 0 0.75rem;
