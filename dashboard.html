@@ -165,7 +165,7 @@
                 </div>
             </div>
             
-            <div id="riwayatContainer">
+            <div id="riwayatContainer" class="riwayat-grid">
                 <!-- Kartu riwayat akan dimuat di sini oleh JavaScript -->
             </div>
         </div>
@@ -177,31 +177,31 @@
             <div class="card">
                 <div class="card-header">Manajemen Database Siswa</div>
                 
-                <form id="formSiswa" class="form-grid">
+                <form id="formSiswa" class="form-container">
                     <input type="hidden" id="formNisnOld"> <!-- Untuk mode edit -->
                     <div class="form-group">
                         <label for="formNisn">NISN</label>
-                        <input type="number" id="formNisn" name="nisn" placeholder="NISN Siswa" required>
+                        <input type="number" id="formNisn" name="NISN" placeholder="NISN Siswa" required>
                     </div>
                     <div class="form-group">
                         <label for="formNama">Nama Lengkap</label>
-                        <input type="text" id="formNama" name="nama" placeholder="Nama Siswa" required>
+                        <input type="text" id="formNama" name="Nama" placeholder="Nama Siswa" required>
                     </div>
                     <div class="form-group">
                         <label for="formKelas">Kelas</label>
-                        <input type="text" id="formKelas" name="kelas" placeholder="Contoh: X-A">
+                        <input type="text" id="formKelas" name="Kelas" placeholder="Contoh: X-A">
                     </div>
                     <div class="form-group">
                         <label for="formTahunAjaran">Tahun Ajaran</label>
-                        <input type="text" id="formTahunAjaran" name="tahunAjaran" placeholder="Contoh: 2024/2025">
+                        <input type="text" id="formTahunAjaran" name="TahunAjaran" placeholder="Contoh: 2024/2025">
                     </div>
                     <div class="form-group form-group-full">
-                        <label for="formMapel">Mata Pelajaran (pisahkan dengan koma)</label>
-                        <input type="text" id="formMapel" name="mapel" placeholder="MTK, B. Indo, IPA">
+                        <label for="formMapel">Mata Pelajaran</label>
+                        <input type="text" id="formMapel" name="MataPelajaran" placeholder="Contoh: Matematika Wajib">
                     </div>
-                    <div class="form-group form-group-full">
-                        <button type="button" id="saveSiswaButton" class="btn btn-accent">Simpan Data Siswa</button>
-                        <button type="button" id="resetSiswaButton" class="btn btn-secondary" style="margin-left: 10px;">Batal</button>
+                    <div class="form-actions">
+                        <button type="submit" id="saveSiswaButton" class="btn btn-accent">Simpan Data Siswa</button>
+                        <button type="button" id="resetSiswaButton" class="btn btn-secondary">Batal</button>
                     </div>
                 </form>
                 
@@ -237,32 +237,34 @@
             <div class="card">
                 <div class="card-header">Manajemen Pengguna</div>
                 
-                <form id="formPengguna" class="form-grid">
-                    <input type="hidden" id="editUsername"> <!-- Untuk mode edit -->
+                <!-- [DIPERBAIKI] Form dengan ID standar untuk interaksi JS -->
+                <form id="formPengguna" class="form-container">
+                    <!-- Input tersembunyi untuk membedakan mode tambah/update -->
+                    <input type="hidden" id="formUsernameOld">
+                    
                     <div class="form-group">
-                        <label for="namaPengguna">Nama Lengkap</label>
-                        <input type="text" id="namaPengguna" placeholder="Contoh: Budi Santoso" required>
+                        <label for="formNamaPengguna">Nama Lengkap</label>
+                        <input type="text" id="formNamaPengguna" placeholder="Contoh: Budi Santoso" required>
                     </div>
                     <div class="form-group">
-                        <label for="usernamePengguna">Username</label>
-                        <input type="text" id="usernamePengguna" placeholder="Username untuk login" required>
+                        <label for="formUsername">Username</label>
+                        <input type="text" id="formUsername" placeholder="Username untuk login" required>
                     </div>
                     <div class="form-group">
-                        <label for="passwordPengguna">Password</label>
-                        <input type="password" id="passwordPengguna" placeholder="Isi untuk mengatur password baru">
-                        <small class="form-helper-text">Kosongkan jika tidak ingin mengubah password.</small>
+                        <label for="formPassword">Password</label>
+                        <input type="password" id="formPassword" placeholder="Isi untuk mengatur password baru">
+                        <small>Kosongkan jika tidak ingin mengubah password.</small>
                     </div>
                     <div class="form-group">
-                        <label for="peranPengguna">Peran (Role)</label>
-                        <select id="peranPengguna" required>
+                        <label for="formPeran">Peran (Role)</label>
+                        <select id="formPeran" required>
                             <option value="Guru">Guru</option>
                             <option value="Admin">Admin</option>
                         </select>
                     </div>
-
-                    <div class="form-group form-group-full">
-                        <button type="button" id="simpanPenggunaButton" class="btn btn-accent">Simpan Pengguna</button>
-                        <button type="button" id="batalEditPenggunaButton" class="btn btn-secondary" style="margin-left: 10px; display: none;">Batal Edit</button>
+                    <div class="form-actions">
+                        <button type="submit" id="savePenggunaButton" class="btn btn-accent">Simpan Pengguna</button>
+                        <button type="button" id="resetPenggunaButton" class="btn btn-secondary">Batal</button>
                     </div>
                 </form>
                 
@@ -272,9 +274,15 @@
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Nama Lengkap</th><th>Username</th><th>Peran</th><th>Aksi</th></tr>
+                            <tr>
+                                <th>Nama Lengkap</th>
+                                <th>Username</th>
+                                <th>Peran</th>
+                                <th>Aksi</th>
+                            </tr>
                         </thead>
-                        <tbody id="tabelPenggunaBody">
+                        <!-- [DIPERBAIKI] ID tbody disesuaikan dengan JS -->
+                        <tbody id="penggunaResultsTableBody">
                             <!-- Data pengguna akan dimuat di sini oleh JavaScript -->
                         </tbody>
                     </table>
@@ -288,8 +296,8 @@
     <!-- JAVASCRIPT LIBRARIES & SCRIPT                              -->
     <!-- ========================================================== -->
     
-    <!-- Library untuk hashing password (diperlukan oleh app.js) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <!-- [DIHAPUS] Library CryptoJS tidak lagi diperlukan oleh frontend -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script> -->
     
     <!-- Library untuk fitur Export ke Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> 
