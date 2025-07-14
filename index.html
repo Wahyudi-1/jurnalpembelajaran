@@ -1,47 +1,65 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <!-- ========================================================== -->
+    <!-- METADATA & KONFIGURASI HALAMAN                             -->
+    <!-- ========================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Jurnal Online</title>
 
+    <!-- ========================================================== -->
+    <!-- STYLESHEETS & FONTS                                        -->
+    <!-- ========================================================== -->
+    
     <!-- 1. Google Fonts (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- 2. Link ke file CSS Anda -->
+    <!-- 2. Main Stylesheet (style.css) -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- 3. Favicon -->
+    <!-- 3. Favicon (Ikon Tab Browser) - Menggunakan SVG inline untuk dependensi nol -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 </head>
 
-<!-- [DIUBAH] Menggunakan class baru untuk layout yang berbeda -->
 <body class="login-page-v2">
 
+    <!-- ========================================================== -->
+    <!-- MAIN LOGIN CONTAINER                                       -->
+    <!-- ========================================================== -->
     <div class="login-box">
-        <!-- Bagian Ilustrasi -->
+        
+        <!-- Kolom Kiri: Ilustrasi & Pesan Selamat Datang -->
         <div class="login-illustration">
             <div class="illustration-content">
-                <svg width="200" height="200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 19.5C4 18.1193 5.11929 17 6.5 17H17.5C18.8807 17 20 18.1193 20 19.5V21.5H4V19.5Z" fill="#a8c7fa"/>
-                    <path d="M12 14C14.2091 14 16 12.2091 16 10C16 7.79086 14.2091 6 12 6C9.79086 6 8 7.79086 8 10C8 12.2091 9.79086 14 12 14Z" fill="#a8c7fa"/>
-                    <path d="M2 7C2 5.89543 2.89543 5 4 5H7C7.55228 5 8 4.55228 8 4C8 3.44772 7.55228 3 7 3H4C1.79086 3 0 4.79086 0 7V17C0 17.5523 0.447715 18 1 18C1.55228 18 2 17.5523 2 17V7Z" fill="#4a90e2"/>
-        <path d="M22 7V17C22 17.5523 22.4477 18 23 18C23.5523 18 24 17.5523 24 17V7C24 4.79086 22.2091 3 20 3H17C16.4477 3 16 3.44772 16 4C16 4.55228 16.4477 5 17 5H20C21.1046 5 22 5.89543 22 7Z" fill="#4a90e2"/>
+                <!-- Ikon SVG sederhana yang mewakili pengguna atau jurnal -->
+                <svg width="150" height="150" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 20H5C3.89543 20 3 19.1046 3 18V6C3 4.89543 3.89543 4 5 4H19C20.1046 4 21 4.89543 21 6V18C21 19.1046 20.1046 20 19 20Z" fill="#a8c7fa"/>
+                    <path d="M7 8H17V10H7V8Z" fill="#4a90e2"/>
+                    <path d="M7 12H17V14H7V12Z" fill="#4a90e2"/>
+                    <path d="M7 16H13V18H7V16Z" fill="#4a90e2"/>
                 </svg>
                 <h3>Selamat Datang Kembali!</h3>
                 <p>Akses cepat dan mudah untuk mengelola jurnal pembelajaran Anda.</p>
             </div>
         </div>
         
-        <!-- Bagian Form Login -->
+        <!-- Kolom Kanan: Form Login -->
         <div class="login-form-container">
             <div class="login-form-content">
-                <h2 class="logo">Jurnal Online</h2>
-                <p style="color: var(--text-light); margin-bottom: 25px;">Silakan masuk untuk melanjutkan</p>
                 
+                <h2 class="logo">Jurnal Online</h2>
+                <p style="color: var(--text-light); margin-bottom: 25px;">Silakan masuk untuk melanjutkan.</p>
+                
+                <!-- 
+                    Form Login: 
+                    - 'onsubmit' digunakan untuk menangkap event "Enter" pada field.
+                    - Mencegah perilaku default dan memicu klik tombol login.
+                -->
                 <form onsubmit="event.preventDefault(); document.getElementById('loginButton').click();">
+                    
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" id="username" placeholder="Masukkan username Anda" required autocomplete="username">
@@ -57,18 +75,29 @@
                     </div>
                 </form>
                 
+                <!-- Elemen untuk menampilkan pesan status dari JavaScript (sukses/error) -->
                 <div id="statusMessage" class="status-message" style="display: none; margin-top: 15px;"></div>
             </div>
         </div>
-    </div>
 
-    <!-- Overlay loading spinner (tidak berubah) -->
+    </div> <!-- End of .login-box -->
+
+    <!-- ========================================================== -->
+    <!-- ELEMEN GLOBAL (LOADING OVERLAY)                            -->
+    <!-- ========================================================== -->
     <div id="loadingIndicator" class="loading-overlay" style="display: none;">
         <div class="spinner"></div>
     </div>
 
-    <!-- JavaScript (tidak berubah) -->
+    <!-- ========================================================== -->
+    <!-- JAVASCRIPT LIBRARIES & SCRIPT                              -->
+    <!-- Ditempatkan di akhir body untuk rendering halaman yg lebih cepat -->
+    <!-- ========================================================== -->
+
+    <!-- Library eksternal untuk hashing password (wajib ada sebelum app.js) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    
+    <!-- Script utama aplikasi -->
     <script src="app.js"></script>
 
 </body>
