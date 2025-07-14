@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Jurnal Pembelajaran Guru</title>
+    
+    <!-- Menghubungkan ke file CSS untuk styling -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 
+      SCRIPT PENTING: Jalankan script otentikasi paling awal.
+      Ini untuk memeriksa apakah pengguna sudah login. Jika belum,
+      ia akan langsung dialihkan ke login.html sebelum sempat melihat konten halaman ini.
+    -->
+    <script src="main.js"></script>
+    <script>checkAuth();</script>
+
+    <!-- Header tetap yang berisi navigasi -->
+    <header>
+        <nav>
+            <div class="nav-links">
+                <a href="#" onclick="event.preventDefault(); loadPage('manajemen-siswa')">Manajemen Siswa</a>
+                <a href="#" onclick="event.preventDefault(); loadPage('input-jurnal')">Input Jurnal</a>
+                <a href="#" onclick="event.preventDefault(); loadPage('lihat-jurnal')">Rekap Jurnal</a>
+                <!-- Menu ini hanya akan tampil jika pengguna adalah Admin -->
+                <a href="#" id="nav-manajemen-pengguna" onclick="event.preventDefault(); loadPage('manajemen-pengguna')" style="display:none;">Manajemen Pengguna</a>
+            </div>
+            <div class="user-info">
+                <span>Halo, <strong id="user-display-name"></strong>!</span>
+                <button id="logoutBtn" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Kontainer utama untuk konten yang dinamis -->
+    <main class="container">
+        <!-- Elemen untuk menampilkan pesan notifikasi terpusat -->
+        <div id="message-box"></div>
+        
+        <!-- Elemen untuk indikator loading terpusat -->
+        <div id="loading-indicator"></div>
+
+        <!-- 
+          AREA KONTEN UTAMA:
+          JavaScript (fungsi loadPage) akan memuat isi dari file HTML lain
+          (misal: input-jurnal.html) ke dalam div ini.
+        -->
+        <div id="main-content">
+            <h2>Selamat Datang di Aplikasi Jurnal Pembelajaran Guru</h2>
+            <p>Pilih salah satu menu di atas untuk memulai pekerjaan Anda.</p>
+        </div>
+    </main>
+    
+    <!-- Script untuk inisialisasi setelah seluruh halaman dimuat -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getUserData(); // Ambil data pengguna dari localStorage via main.js
+            if (user) {
+                // Tampilkan nama pengguna di navigasi
+                document.getElementById('user-display-name').textContent = user.nama;
+                
+                // Logika untuk menampilkan menu khusus Admin
+                if (user.peran && user.peran.toLowerCase() === 'admin') {
+                    document.getElementById('nav-manajemen-pengguna').style.display = 'inline-block';
+                }
+            }
+            // Muat halaman default saat pertama kali login (opsional)
+            // Contoh: loadPage('input-jurnal'); 
+        });
+    </script>
+</body>
+</html>
