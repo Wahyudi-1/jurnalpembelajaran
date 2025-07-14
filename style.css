@@ -1,337 +1,324 @@
-/* ==========================================================================
-   STYLE UNTUK APLIKASI JURNAL PEMBELAJARAN
-   Versi: 1.0
-   Deskripsi: Desain modern, bersih, dan responsif.
-   ========================================================================== */
+/* =================================================================
+   CSS UTAMA - JURNAL PEMBELAJARAN
+   Didesain secara Mobile-First dan Responsif
+   ================================================================= */
 
-/* === IMPORT FONT & CSS VARIABLES (PALET WARNA) === */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
+/* -----------------------------------------------------------------
+   1. VARIABEL GLOBAL & RESET DASAR
+   ----------------------------------------------------------------- */
 :root {
-  --primary-color: #4A90E2; /* Biru yang cerah dan profesional */
-  --primary-dark: #357ABD; /* Biru lebih gelap untuk hover */
-  --success-color: #4CAF50; /* Hijau untuk notifikasi sukses */
-  --error-color: #F44336;   /* Merah untuk notifikasi error */
-  --bg-light: #f4f7f9;     /* Latar belakang body yang sangat terang */
-  --bg-white: #ffffff;     /* Latar belakang container utama */
-  --text-dark: #333333;    /* Warna teks utama */
-  --text-light: #666666;   /* Warna teks sekunder */
-  --border-color: #e0e0e0; /* Warna border untuk input dan tabel */
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Efek bayangan yang lembut */
+    --primary-color: #4a90e2; /* Biru Profesional */
+    --primary-dark: #357ABD;
+    --secondary-color: #f4f7fc; /* Latar Belakang Abu-abu Sangat Muda */
+    --accent-color: #50e3c2; /* Hijau Mint untuk Aksen */
+    --accent-dark: #40b59b;
+    --text-color: #333333; /* Abu-abu Tua untuk Teks */
+    --text-light: #666666;
+    --border-color: #dfe4ea;
+    --white-color: #ffffff;
+    --danger-color: #e74c3c;
+    --success-color: #2ecc71;
+    --font-family: 'Poppins', sans-serif;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --border-radius: 8px;
 }
 
-/* === PENGATURAN GLOBAL & DASAR === */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-dark);
-  line-height: 1.6;
+    font-family: var(--font-family);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
-.container {
-  max-width: 1100px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: var(--bg-white);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+/* -----------------------------------------------------------------
+   2. HALAMAN LOGIN
+   ----------------------------------------------------------------- */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-/* === HALAMAN LOGIN === */
 .login-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+    width: 100%;
+    max-width: 400px;
+    background: var(--white-color);
+    padding: 40px 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
 }
 
-#loginForm {
-  width: 100%;
-  max-width: 400px;
-  padding: 2.5rem;
-  background: var(--bg-white);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+.login-container h2 {
+    margin-bottom: 25px;
+    color: var(--text-color);
+    font-weight: 600;
 }
 
-/* === HEADER & NAVIGASI === */
+/* -----------------------------------------------------------------
+   3. LAYOUT UTAMA (DASHBOARD)
+   ----------------------------------------------------------------- */
 header {
-  background-color: var(--primary-color);
-  color: var(--bg-white);
-  padding: 0 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: var(--white-color);
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  height: 70px;
+header .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
 }
 
-.nav-links a {
-  color: var(--bg-white);
-  text-decoration: none;
-  margin: 0 1rem;
-  padding: 0.5rem 0;
-  font-weight: 500;
-  position: relative;
-  transition: color 0.3s ease;
+main {
+    padding: 1.5rem;
 }
 
-/* Efek garis bawah yang muncul saat hover */
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--bg-white);
-  transition: width 0.3s ease;
+/* -----------------------------------------------------------------
+   4. KOMPONEN UTAMA (KARTU, FORM, TOMBOL, TABEL)
+   ----------------------------------------------------------------- */
+
+/* Kartu (Card) untuk membungkus konten */
+.card {
+    background: var(--white-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+.card-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
-.nav-links a:hover::after {
-  width: 100%;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-#logoutBtn {
-  background-color: var(--error-color);
-  color: white;
-  border: none;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-#logoutBtn:hover {
-  background-color: #d32f2f; /* Merah lebih gelap */
-}
-
-/* === FORMULIR (INPUT, SELECT, BUTTON) === */
+/* Form dan Input */
 .form-group {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--text-dark);
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-light);
 }
 
 input[type="text"],
 input[type="password"],
+input[type="email"],
 input[type="date"],
+input[type="number"],
 select,
 textarea {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-family: var(--font-family);
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-/* Efek glow saat input aktif */
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
 }
 
-button {
-  display: inline-block;
-  padding: 0.8rem 1.8rem;
-  border: none;
-  border-radius: 6px;
-  background-color: var(--primary-color);
-  color: white;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
-button:hover {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px); /* Efek tombol terangkat */
+/* Tombol (Button) */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+.btn:hover {
+    transform: translateY(-2px);
+}
+.btn:active {
+    transform: translateY(0);
 }
 
-button:active {
-  transform: translateY(0);
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
 }
 
-/* === TABEL DATA === */
+.btn-accent {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+}
+.btn-accent:hover {
+    background-color: var(--accent-dark);
+}
+
+.btn-secondary {
+    background-color: #e0e0e0;
+    color: var(--text-color);
+}
+.btn-secondary:hover {
+    background-color: #bdbdbd;
+}
+
+.btn-block {
+    width: 100%;
+    display: block;
+}
+
+/* Tabel */
+.table-container {
+    overflow-x: auto; /* Memastikan tabel bisa di-scroll di desktop jika terlalu lebar */
+}
+
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1.5rem;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+thead {
+    background-color: #f8f9fa;
 }
 
 th, td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
 }
 
-thead th {
-  background-color: var(--bg-light);
-  font-weight: 600;
-  color: var(--text-dark);
+th {
+    font-weight: 600;
+    color: var(--text-light);
 }
 
 tbody tr:hover {
-  background-color: #eaf2fa; /* Warna biru sangat terang saat hover */
+    background-color: var(--secondary-color);
 }
 
-/* === NOTIFIKASI & LOADING (Elemen UI Interaktif) === */
-
-/* Kotak pesan yang muncul di atas */
-#message-box {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 1rem 2rem;
-  border-radius: 6px;
-  color: white;
-  font-weight: 500;
-  box-shadow: var(--shadow);
-  z-index: 1000;
-  display: none;
-  animation: slideDown 0.5s ease forwards;
-}
-
-#message-box.success {
-  background-color: var(--success-color);
-}
-
-#message-box.error {
-  background-color: var(--error-color);
-}
-
-/* Indikator Loading dengan Spinner */
-#loading-indicator {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-#loading-indicator::after {
-    content: '';
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--border-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* === ANIMASI === */
-
-/* Animasi untuk pesan notifikasi */
-@keyframes slideDown {
-  from {
-    top: -100px;
-    opacity: 0;
-  }
-  to {
-    top: 20px;
-    opacity: 1;
-  }
-}
-
-/* Animasi untuk spinner loading */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-/* === DESAIN RESPONSIVE UNTUK MOBILE === */
-@media (max-width: 768px) {
-  nav {
-    flex-direction: column;
-    height: auto;
+/* -----------------------------------------------------------------
+   5. UTILITIES (Pesan Notifikasi, Loading)
+   ----------------------------------------------------------------- */
+#statusMessage {
     padding: 1rem;
-  }
-  
-  .nav-links {
     margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .container {
-    margin: 1rem;
-    padding: 1rem;
-  }
+    border-radius: var(--border-radius);
+    display: none; /* Default disembunyikan */
+}
+#statusMessage.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+#statusMessage.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
 
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
+#loadingIndicator {
+    /* Implementasi loading indicator (misal: spinner) */
+    display: none; /* Default disembunyikan */
+}
 
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-  
-  tr { border: 1px solid var(--border-color); margin-bottom: 1rem; }
-  
-  td {
-    border: none;
-    border-bottom: 1px solid #eee;
-    position: relative;
-    padding-left: 50%;
-  }
-  
-  td:before {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    width: 45%;
-    padding-right: 10px;
-    white-space: nowrap;
-    font-weight: 600;
-  }
+/* -----------------------------------------------------------------
+   6. RESPONSIVE DESIGN (MEDIA QUERIES)
+   ----------------------------------------------------------------- */
 
-  /* Label untuk data tabel di mobile */
-  td:nth-of-type(1):before { content: "NISN"; }
-  td:nth-of-type(2):before { content: "Nama"; }
-  td:nth-of-type(3):before { content: "Kehadiran"; }
-  /* Sesuaikan label ini untuk tabel rekap yang lebih banyak kolomnya */
+/* Tampilan Tablet (dan desktop kecil) */
+@media (min-width: 768px) {
+    main {
+        padding: 2rem;
+    }
 
+    /* Mengatur form menjadi 2 kolom jika diinginkan */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Tampilan Desktop Besar */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    main {
+        padding: 2rem 0; /* Padding dihilangkan karena sudah ada di container */
+    }
+}
+
+
+/* === STRATEGI TABEL RESPONSIVE untuk Layar Kecil (DI BAWAH 768px) === */
+@media (max-width: 767px) {
+    thead {
+        /* Sembunyikan header tabel tradisional */
+        display: none;
+    }
+
+    tr {
+        /* Setiap baris menjadi seperti sebuah kartu */
+        display: block;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        background: var(--white-color);
+    }
+    
+    td {
+        display: block;
+        text-align: right; /* Sejajarkan nilai ke kanan */
+        padding-left: 50%; /* Beri ruang untuk label */
+        position: relative;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    td:last-child {
+        border-bottom: none;
+    }
+
+    td::before {
+        /* Tampilkan label dari atribut data-label */
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: calc(50% - 2rem);
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color);
+    }
 }
