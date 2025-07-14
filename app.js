@@ -19,7 +19,7 @@
 // -----------------------------------------------------------------
 const CONFIG = {
     // Pastikan URL ini adalah URL deployment terbaru dari Apps Script Anda
-    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw4qH5O7k6I89cYoWG2AR-Jpw8LK0hcjRYO4CruQpjlsE_JVZpJ3VCgw1bPLMOVBvY/exec",
+    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbyHivupCUNdvPWYL3ZcYcshUKVtWIJFXM2BxFCg0ocWstvtY_0HUjL9c5vyX-pyJd_q4g/exec",
 };
 
 // -----------------------------------------------------------------
