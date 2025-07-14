@@ -5,62 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Jurnal Pembelajaran</title>
 
-    <!-- 1. Google Fonts (Untuk tampilan huruf yang modern) -->
+    <!-- 1. Google Fonts (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- 2. Link ke file CSS Anda -->
-    <!-- Path ini sudah disesuaikan dengan struktur file Anda di GitHub -->
+    <!-- 2. Link ke file CSS Anda (Gunakan path yang benar) -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- [BARU] Menambahkan Favicon untuk tampilan profesional di tab browser -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 </head>
 
 <body class="login-page">
 
     <div class="login-container">
         
-        <h2>Jurnal Pembelajaran Online</h2>
-        <p style="margin-bottom: 25px; color: #666;">Silakan masuk untuk melanjutkan</p>
+        <h2 class="logo" style="margin-bottom: 10px;">Jurnal Online</h2>
+        <p style="margin-bottom: 25px; color: var(--text-light);">Silakan masuk untuk melanjutkan</p>
         
-        <!-- ====================================================== -->
-        <!-- Form Login                                             -->
-        <!-- ID dari setiap elemen (input, button) harus cocok     -->
-        <!-- dengan yang digunakan di file app.js                   -->
-        <!-- ====================================================== -->
-        <div class="form-group">
-            <input type="text" id="username" placeholder="Username" required>
-        </div>
+        <!-- 
+            Form Login
+            - ID dari setiap elemen (input, button) harus cocok 
+              dengan yang digunakan di file app.js
+            - 'autocomplete' ditambahkan untuk pengalaman pengguna yang lebih baik
+        -->
+        <form onsubmit="event.preventDefault(); document.getElementById('loginButton').click();">
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+            </div>
+            
+            <div class="form-group">
+                <button type="button" id="loginButton" class="btn btn-primary btn-block">Login</button>
+            </div>
+        </form>
         
-        <div class="form-group">
-            <input type="password" id="password" placeholder="Password" required>
-        </div>
-        
-        <div class="form-group">
-            <button id="loginButton" class="btn btn-primary btn-block">Login</button>
-        </div>
-        
-        <!-- ====================================================== -->
-        <!-- Elemen untuk Feedback Pengguna dari JavaScript         -->
-        <!-- ====================================================== -->
-        
-        <!-- Area untuk menampilkan pesan error (misal: "Password salah") -->
+        <!-- 
+            Elemen untuk Feedback Pengguna dari JavaScript
+            Diposisikan di luar form agar tidak terpengaruh oleh event submit.
+        -->
         <div id="statusMessage" class="status-message" style="display: none; margin-top: 15px;"></div>
         
-        <!-- Overlay loading spinner yang akan muncul saat proses login -->
-        <div id="loadingIndicator" class="loading-overlay" style="display: none;">
-            <div class="spinner"></div>
-        </div>
+    </div>
 
+    <!-- 
+        Overlay loading spinner yang akan muncul saat proses login.
+        Diletakkan di luar container utama agar bisa menutupi seluruh halaman.
+    -->
+    <div id="loadingIndicator" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
     </div>
 
     <!-- ========================================================== -->
-    <!-- 3. JavaScript (Wajib diletakkan di akhir body)             -->
+    <!-- JavaScript (Wajib diletakkan di akhir body)                -->
     <!-- ========================================================== -->
 
     <!-- Library eksternal untuk hashing password (wajib ada sebelum app.js) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     
-    <!-- Script utama aplikasi Anda (path sudah disesuaikan) -->
+    <!-- Script utama aplikasi Anda (Gunakan path yang benar) -->
     <script src="app.js"></script>
 
 </body>
