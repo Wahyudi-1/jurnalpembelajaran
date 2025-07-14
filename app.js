@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------
 const CONFIG = {
     // URL Deployment terbaru dari Apps Script Anda
-    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbyHpFqmNmdc16Y3wtU2acOaM54_mFUHJf96Z3_zne4vgb5IplMozMnknLMWvU6MB1DGXA/exec",
+    WEB_APP_URL: "https://script.google.com/macros/s/AKfycby5V65yLzYbXldtu5YxrWBrCgONlNUZ2sBJvlGt0sPg5sMOfyoCG_aQ9abIM47nIvs/exec",
 };
 
 // -----------------------------------------------------------------
