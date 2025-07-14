@@ -1,25 +1,23 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI LENGKAP)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI TANPA LOGIN)
  * =================================================================
- * @version 2.2 - Fully Integrated with History, Stats, and CRUD enhancements
+ * @version 2.3 - Simplified for no-login access.
  * @author Gemini AI Expert for User
  * 
  * Perbaikan utama:
- * - Implementasi penuh semua fungsionalitas yang disarankan.
- * - [BARU] Halaman Riwayat Jurnal dengan filter dan detail.
- * - [BARU] Kartu Statistik pada Dashboard.
- * - [BARU] Fungsi Edit Siswa yang lengkap (mengisi form dan mode update).
- * - [BARU] Fitur Export ke Excel menggunakan SheetJS.
- * - Kode bersih dengan penambahan komentar untuk kejelasan.
+ * - Menghilangkan semua fungsionalitas login, logout, dan otentikasi.
+ * - Aplikasi langsung membuka dashboard utama.
+ * - Kode lebih ramping dan fokus pada manajemen data.
+ * - Menggunakan URL Web App yang telah ditentukan.
  */
 
 // -----------------------------------------------------------------
 // 1. KONFIGURASI UTAMA
 // -----------------------------------------------------------------
 const CONFIG = {
-    // Pastikan URL ini adalah URL deployment terbaru dari Apps Script Anda
-    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbys3nen8PtJLjhI0B6IxxjDal_zb6HoZPWUbaRO1EsLjsdkTUeWIDZmJXDXkdeBI_0Fvw/exec",
+    // URL Deployment terbaru dari Apps Script Anda
+    WEB_APP_URL: "https://script.google.com/macros/s/AKfycbyHpFqmNmdc16Y3wtU2acOaM54_mFUHJf96Z3_zne4vgb5IplMozMnknLMWvU6MB1DGXA/exec",
 };
 
 // -----------------------------------------------------------------
@@ -78,10 +76,10 @@ const Utils = {
         if (select) {
             const currentValue = select.value;
             select.innerHTML = '<option value="">-- Pilih Semua --</option>';
-            options.forEach(option => {
+            (options || []).forEach(option => {
                 if (option) select.innerHTML += `<option value="${option}">${option}</option>`;
             });
-            select.value = currentValue; // Coba pertahankan nilai sebelumnya jika ada
+            select.value = currentValue;
         }
     },
     
@@ -107,68 +105,26 @@ const Utils = {
 // 4. MODUL FITUR APLIKASI
 // -----------------------------------------------------------------
 const AppModules = {
-    // --- Modul Otentikasi & Data Global ---
-    async handleLogin() {
-        const usernameEl = document.getElementById('username');
-        const passwordEl = document.getElementById('password');
-        if (!usernameEl.value || !passwordEl.value) {
-            return Utils.showStatusMessage("Username dan password harus diisi.", 'error');
-        }
-        const passwordHash = CryptoJS.SHA256(passwordEl.value).toString();
-        try {
-            const result = await Api.postToAction('login', { username: usernameEl.value, passwordHash });
-            if (result.status === "success") {
-                sessionStorage.setItem('loggedInUser', JSON.stringify(result.data));
-                window.location.href = 'dashboard.html';
-            }
-        } catch (error) { /* Error sudah ditangani di Api.postToAction */ }
-    },
-
-    handleLogout() {
-        sessionStorage.removeItem('loggedInUser');
-        window.location.href = 'index.html';
-    },
-
-    checkAuthentication() {
-        const user = sessionStorage.getItem('loggedInUser');
-        if (!user) {
-            window.location.href = 'index.html';
-        } else {
-            const userData = JSON.parse(user);
-            const welcomeEl = document.getElementById('welcomeMessage');
-            if (welcomeEl) welcomeEl.textContent = `Selamat Datang, ${userData.nama}!`;
-            
-            if (userData.peran.toLowerCase() !== 'admin') {
-                const userManagementButton = document.querySelector('button[data-section="penggunaSection"]');
-                if (userManagementButton) userManagementButton.style.display = 'none';
-            }
-        }
-    },
-
     async populateAllFilters() {
         try {
             const result = await Api.postToAction('getFilterOptions');
             if (result.status === 'success') {
-                // Filter untuk form Jurnal
                 Utils.populateDropdown('filterTahunAjaran', result.data.tahunAjaran);
                 Utils.populateDropdown('filterKelas', result.data.kelas);
                 Utils.populateDropdown('filterMataPelajaran', result.data.mataPelajaran);
-
-                // [BARU] Filter untuk halaman Riwayat
                 Utils.populateDropdown('riwayatFilterKelas', result.data.kelas);
                 Utils.populateDropdown('riwayatFilterMapel', result.data.mataPelajaran);
             }
         } catch (error) { /* error ditangani di API */ }
     },
 
-    // --- Modul Dashboard & Jurnal ---
     async loadDashboardStats() {
         try {
             const result = await Api.postToAction('getDashboardStats');
             if (result.status === 'success') {
-                document.getElementById('statTotalJurnal').textContent = result.data.totalJurnalBulanIni;
-                document.getElementById('statKehadiran').textContent = result.data.tingkatKehadiran;
-                document.getElementById('statMapelTeratas').textContent = result.data.mapelTeratas;
+                document.getElementById('statTotalJurnal').textContent = result.data.totalJurnalBulanIni || '0';
+                document.getElementById('statKehadiran').textContent = result.data.tingkatKehadiran || 'N/A';
+                document.getElementById('statMapelTeratas').textContent = result.data.mapelTeratas || 'N/A';
             }
         } catch (error) {
             console.error("Gagal memuat statistik dashboard.");
@@ -176,14 +132,70 @@ const AppModules = {
     },
 
     async loadSiswaForPresensi() {
-        // ... (Fungsi ini tidak berubah, sudah baik) ...
+        const payload = {
+            tahunAjaran: document.getElementById('filterTahunAjaran').value,
+            kelas: document.getElementById('filterKelas').value,
+        };
+        if (!payload.tahunAjaran || !payload.kelas) {
+            return Utils.showStatusMessage('Tahun Ajaran dan Kelas harus dipilih.', 'error');
+        }
+        try {
+            const result = await Api.postToAction('loadSiswaForPresensi', payload);
+            const tableBody = document.getElementById('presensiTableBody');
+            tableBody.innerHTML = '';
+            if (result.data.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">Tidak ada siswa ditemukan untuk kelas ini.</td></tr>';
+                 return;
+            }
+            result.data.forEach(siswa => {
+                const row = `
+                    <tr data-nisn="${siswa.NISN}" data-nama="${siswa.Nama}">
+                        <td data-label="NISN">${siswa.NISN}</td>
+                        <td data-label="Nama">${siswa.Nama}</td>
+                        <td data-label="Kehadiran">
+                            <select class="presensi-status">
+                                <option value="Hadir" selected>Hadir</option>
+                                <option value="Sakit">Sakit</option>
+                                <option value="Izin">Izin</option>
+                                <option value="Alfa">Alfa</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (error) { /* error ditangani di API */ }
     },
 
     async submitJurnal() {
-        // ... (Fungsi ini tidak berubah, sudah baik) ...
+        const presensiRows = document.querySelectorAll('#presensiTableBody tr');
+        const payload = {
+            tahunAjaran: document.getElementById('filterTahunAjaran').value,
+            kelas: document.getElementById('filterKelas').value,
+            mapel: document.getElementById('filterMataPelajaran').value,
+            tanggal: document.getElementById('tanggalPembelajaran').value,
+            periode: document.getElementById('periodePembelajaran').value,
+            materi: document.getElementById('materiPembelajaran').value,
+            catatan: document.getElementById('catatanPembelajaran').value,
+            presensi: Array.from(presensiRows).map(row => ({
+                nisn: row.dataset.nisn,
+                nama: row.dataset.nama,
+                status: row.querySelector('.presensi-status').value,
+            })),
+        };
+        
+        if (!payload.tanggal || !payload.mapel || !payload.materi || payload.presensi.length === 0) {
+            return Utils.showStatusMessage('Tanggal, Mata Pelajaran, Materi, dan Daftar Siswa wajib diisi.', 'error');
+        }
+        
+        try {
+            const result = await Api.postToAction('submitJurnal', payload);
+            Utils.showStatusMessage(result.message, 'success');
+            document.getElementById('formJurnal').reset();
+            document.getElementById('presensiTableBody').innerHTML = '';
+        } catch (error) { /* error ditangani di API */ }
     },
     
-    // --- [BARU] Modul Riwayat Jurnal ---
     async loadRiwayatJurnal() {
         const filters = {
             kelas: document.getElementById('riwayatFilterKelas').value,
@@ -195,7 +207,7 @@ const AppModules = {
         try {
             const result = await Api.postToAction('getJurnalHistory', filters);
             container.innerHTML = '';
-            if (result.data.length === 0) {
+            if (!result.data || result.data.length === 0) {
                 container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Tidak ada riwayat jurnal yang ditemukan.</p>';
                 return;
             }
@@ -203,34 +215,52 @@ const AppModules = {
             result.data.forEach(jurnal => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                // Gunakan backtick (`) untuk template literal agar mudah dibaca
                 card.innerHTML = `
-                    <h4 style="color: var(--primary-color);">${jurnal.MataPelajaran} - ${jurnal.Kelas}</h4>
+                    <h4>${jurnal.MataPelajaran} - ${jurnal.Kelas}</h4>
                     <small style="color: var(--text-light);">${new Date(jurnal.Tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</small>
-                    <p style="margin-top: 10px; border-left: 3px solid var(--border-color); padding-left: 10px;"><strong>Materi:</strong> ${jurnal.Materi.substring(0, 100)}...</p>
+                    <p style="margin-top: 10px; border-left: 3px solid var(--border-color); padding-left: 10px;"><strong>Materi:</strong> ${(jurnal.Materi || '').substring(0, 100)}...</p>
                     <p><strong>Total Hadir:</strong> ${jurnal.presensi.filter(p => p.Status === 'Hadir').length} / ${jurnal.presensi.length} siswa</p>
                     <button class="btn btn-secondary" onclick="App.showJurnalDetail('${jurnal.ID}')">Lihat Detail</button>
                 `;
                 container.appendChild(card);
             });
-            // Simpan hasil untuk digunakan oleh fungsi detail
             window.jurnalHistoryData = result.data; 
-
         } catch (error) {
             container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Gagal memuat riwayat.</p>';
         }
     },
 
-    // --- Modul Manajemen Siswa ---
     async searchSiswa() {
-        // ... (Fungsi ini tidak berubah, sudah baik) ...
+        const query = document.getElementById('nisnSearchInput').value;
+        try {
+            const result = await Api.postToAction('searchSiswa', { query });
+            const tableBody = document.getElementById('siswaResultsTableBody');
+            tableBody.innerHTML = '';
+            if (!result.data || result.data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Data siswa tidak ditemukan.</td></tr>';
+                return;
+            }
+            result.data.forEach(siswa => {
+                const row = `
+                    <tr>
+                        <td data-label="NISN">${siswa.NISN}</td>
+                        <td data-label="Nama">${siswa.Nama}</td>
+                        <td data-label="Kelas">${siswa.Kelas}</td>
+                        <td data-label="Tahun Ajaran">${siswa.TahunAjaran}</td>
+                        <td data-label="Aksi">
+                            <button class="btn btn-sm btn-primary" onclick="App.editSiswaHandler('${siswa.NISN}')">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="App.deleteSiswaHandler('${siswa.NISN}')">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (error) { /* error ditangani di API */ }
     },
 
     async saveSiswa() {
-        const oldNisn = document.getElementById('formNisnOld').value;
         const siswaData = {
-            oldNisn: oldNisn, // Kirim NISN lama, kosong jika mode 'tambah'
-            // Gunakan key sesuai header spreadsheet untuk kemudahan di backend
+            oldNisn: document.getElementById('formNisnOld').value,
             NISN: document.getElementById('formNisn').value,
             Nama: document.getElementById('formNama').value,
             Kelas: document.getElementById('formKelas').value,
@@ -244,39 +274,27 @@ const AppModules = {
 
         try {
             const result = await Api.postToAction('saveSiswa', siswaData);
-            if (result.status === 'success') {
-                Utils.showStatusMessage(result.message, 'success');
-                App.resetFormSiswa();
-                this.searchSiswa(); // Refresh tabel siswa
-            }
+            Utils.showStatusMessage(result.message, 'success');
+            App.resetFormSiswa();
+            this.searchSiswa();
         } catch (error) { /* error ditangani di API */ }
     },
 };
-
 
 // -----------------------------------------------------------------
 // 5. INISIALISASI APLIKASI & HANDLER UTAMA
 // -----------------------------------------------------------------
 const App = {
-    initLoginPage() {
-        Utils.safeAddEventListener('loginButton', 'click', AppModules.handleLogin);
-    },
-
-    initDashboardPage() {
-        AppModules.checkAuthentication();
+    initMainPage() {
         this.setupCommonListeners();
         this.setupNavigation();
         
-        // Muat data awal yang dibutuhkan di seluruh dashboard
         AppModules.populateAllFilters();
         AppModules.loadDashboardStats();
-        AppModules.searchSiswa(); // Tampilkan daftar siswa awal
+        AppModules.searchSiswa();
     },
     
     setupCommonListeners() {
-        // Tombol Global
-        Utils.safeAddEventListener('logoutButton', 'click', AppModules.handleLogout);
-
         // Halaman Jurnal
         Utils.safeAddEventListener('loadSiswaButton', 'click', AppModules.loadSiswaForPresensi);
         Utils.safeAddEventListener('submitJurnalButton', 'click', AppModules.submitJurnal);
@@ -285,10 +303,10 @@ const App = {
         Utils.safeAddEventListener('saveSiswaButton', 'click', AppModules.saveSiswa);
         Utils.safeAddEventListener('searchButton', 'click', AppModules.searchSiswa);
         Utils.safeAddEventListener('nisnSearchInput', 'keyup', (e) => { if (e.key === 'Enter') AppModules.searchSiswa(); });
-        Utils.safeAddEventListener('resetSiswaButton', 'click', this.resetFormSiswa); // [BARU] Tombol reset
-        Utils.safeAddEventListener('exportSiswaExcel', 'click', this.exportSiswaToExcelHandler); // [BARU] Tombol export
+        Utils.safeAddEventListener('resetSiswaButton', 'click', this.resetFormSiswa);
+        Utils.safeAddEventListener('exportSiswaExcel', 'click', this.exportSiswaToExcelHandler);
 
-        // [BARU] Halaman Riwayat Jurnal
+        // Halaman Riwayat Jurnal
         Utils.safeAddEventListener('filterRiwayatButton', 'click', AppModules.loadRiwayatJurnal);
     },
 
@@ -301,26 +319,21 @@ const App = {
                 const sectionId = button.dataset.section;
                 Utils.showSection(sectionId);
 
-                // [BARU] Jika bagian riwayat yang dibuka, langsung muat datanya
                 if (sectionId === 'riwayatSection') {
                     AppModules.loadRiwayatJurnal();
                 }
             });
         });
 
-        // Tampilkan halaman pertama secara default
         Utils.showSection('jurnalSection');
-        const firstButton = document.querySelector('.section-nav button');
+        const firstButton = document.querySelector('.section-nav button[data-section="jurnalSection"]');
         if(firstButton) firstButton.classList.add('active');
     },
 
-    // --- [BARU] Kumpulan Handler untuk Tombol Dinamis & Aksi Form ---
-
     showJurnalDetail(jurnalId) {
-        const jurnal = window.jurnalHistoryData.find(j => j.ID == jurnalId);
+        const jurnal = (window.jurnalHistoryData || []).find(j => j.ID == jurnalId);
         if (!jurnal) return alert('Detail jurnal tidak ditemukan!');
 
-        // Membuat format teks yang rapi untuk ditampilkan di alert
         let presensiList = jurnal.presensi.map(p => ` - ${p.Nama}: ${p.Status}`).join('\n');
         if (!presensiList) presensiList = "Tidak ada data presensi.";
 
@@ -355,14 +368,11 @@ ${presensiList}
                 document.getElementById('formNama').value = siswa.Nama;
                 document.getElementById('formKelas').value = siswa.Kelas;
                 document.getElementById('formTahunAjaran').value = siswa.TahunAjaran;
-                document.getElementById('formMapel').value = Array.isArray(siswa.MataPelajaran) ? siswa.MataPelajaran.join(', ') : (siswa.MataPelajaran || '');
-                document.getElementById('formNisnOld').value = siswa.NISN; // Simpan NISN lama
+                document.getElementById('formMapel').value = siswa.MataPelajaran || '';
+                document.getElementById('formNisnOld').value = siswa.NISN;
 
                 const saveButton = document.getElementById('saveSiswaButton');
                 saveButton.textContent = 'Update Data Siswa';
-                saveButton.classList.remove('btn-accent');
-                saveButton.classList.add('btn-primary');
-
                 document.getElementById('formSiswa').scrollIntoView({ behavior: 'smooth' });
             }
         } catch (error) { /* error sudah ditangani di API */ }
@@ -371,26 +381,17 @@ ${presensiList}
     resetFormSiswa() {
         document.getElementById('formSiswa').reset();
         document.getElementById('formNisnOld').value = '';
-        
-        const saveButton = document.getElementById('saveSiswaButton');
-        saveButton.textContent = 'Simpan Data Siswa';
-        saveButton.classList.remove('btn-primary');
-        saveButton.classList.add('btn-accent');
+        document.getElementById('saveSiswaButton').textContent = 'Simpan Data Siswa';
     },
 
     exportSiswaToExcelHandler() {
         const table = document.querySelector("#siswaSection table");
-        const tableBody = table.querySelector('tbody');
-
-        if (!table || !tableBody || tableBody.rows.length === 0 || tableBody.rows[0].cells.length <= 1) {
-            Utils.showStatusMessage('Tidak ada data pada tabel untuk di-export.', 'error');
-            return;
+        if (!table || table.rows.length <= 1) {
+            return Utils.showStatusMessage('Tidak ada data pada tabel untuk di-export.', 'error');
         }
         
         try {
-            // Konversi tabel HTML ke workbook SheetJS
             const wb = XLSX.utils.table_to_book(table, { sheet: "Daftar Siswa" });
-            // Generate file Excel dan trigger download
             XLSX.writeFile(wb, "Daftar_Siswa.xlsx");
             Utils.showStatusMessage('Export berhasil!', 'success');
         } catch (error) {
@@ -403,23 +404,15 @@ ${presensiList}
         if (confirm(`Apakah Anda yakin ingin menghapus siswa dengan NISN: ${nisn}? Aksi ini tidak dapat dibatalkan.`)) {
             try {
                 const result = await Api.postToAction('deleteSiswa', { nisn });
-                if (result.status === 'success') {
-                    Utils.showStatusMessage('Siswa berhasil dihapus.', 'success');
-                    AppModules.searchSiswa(); // Refresh tabel
-                }
+                Utils.showStatusMessage(result.message, 'success');
+                AppModules.searchSiswa();
             } catch (error) { /* error ditangani di API */ }
         }
     },
 
-    // --- Fungsi Utama untuk Menjalankan Aplikasi ---
     run() {
         document.addEventListener('DOMContentLoaded', () => {
-            const pageName = window.location.pathname.split("/").pop();
-            if (pageName === 'dashboard.html') {
-                this.initDashboardPage();
-            } else {
-                this.initLoginPage();
-            }
+            this.initMainPage();
         });
     }
 };
