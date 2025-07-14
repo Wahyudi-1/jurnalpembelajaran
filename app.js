@@ -1,335 +1,552 @@
 /**
  * =================================================================
- * CSS UTAMA - JURNAL PEMBELAJARAN (VERSI LENGKAP)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI LENGKAP & STABIL)
  * =================================================================
- * @version 2.2 - Enhanced with styles for new features & UI polish
+ * @version 3.1 - Implementasi penuh semua fungsionalitas.
  * @author Gemini AI Expert for User
  *
- * Perbaikan utama:
- * - [BARU] Style untuk kartu riwayat jurnal agar lebih informatif.
- * - [BARU] Style untuk tombol aksi kecil (edit, hapus) di dalam tabel.
- * - [BARU] Style untuk tombol reset/batal.
- * - [BARU] Style untuk overlay modal (persiapan untuk detail jurnal yang lebih canggih).
- * - Penambahan transisi halus pada beberapa elemen untuk UX yang lebih baik.
+ * PERUBAHAN UTAMA:
+ * - [URL BARU] Menggunakan URL Web App yang telah disediakan.
+ * - [IMPLEMENTASI] Fungsi untuk memuat siswa ke tabel presensi.
+ * - [IMPLEMENTASI] Fungsi untuk mengumpulkan dan mengirim data Jurnal + Presensi.
+ * - [IMPLEMENTASI] Fungsi untuk memuat, menampilkan, dan melihat detail Riwayat Jurnal.
+ * - Kode ini dirancang untuk bekerja secara optimal dengan backend yang telah dibuat.
  */
 
-/* -----------------------------------------------------------------
-   1. VARIABEL GLOBAL & RESET DASAR
-   ----------------------------------------------------------------- */
-:root {
-    --primary-color: #4a90e2;
-    --primary-dark: #357ABD;
-    --secondary-color: #f4f7fc;
-    --accent-color: #50e3c2;
-    --accent-dark: #40b59b;
-    --text-color: #333333;
-    --text-light: #6c757d;
-    --border-color: #dfe4ea;
-    --white-color: #ffffff;
-    --danger-color: #e74c3c;
-    --danger-dark: #c0392b;
-    --success-color: #2ecc71;
-    --success-dark: #27ae60;
-    --font-family: 'Poppins', sans-serif;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
-    --border-radius: 8px;
-    --transition-speed: 0.3s;
+// ====================================================================
+// TAHAP 1: KONFIGURASI GLOBAL DAN STATE APLIKASI
+// ====================================================================
+
+// URL WEB APP YANG SUDAH TERBUKTI STABIL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMYelEcD482DsmpyfHG0uAZMBXFS4tAKzFjvckzHJiib9P1KgFWnenMU3h_WDsUi41Gw/exec";
+
+// --- STATE APLIKASI & CACHE ---
+let cachedSiswaData = [];
+let cachedJurnalHistory = [];
+let searchTimeout;
+
+// ====================================================================
+// TAHAP 2: FUNGSI-FUNGSI PEMBANTU (HELPERS)
+// ====================================================================
+
+function showLoading(isLoading) {
+    const loader = document.getElementById('loadingIndicator');
+    if (loader) loader.style.display = isLoading ? 'flex' : 'none';
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: var(--font-family);
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    line-height: 1.6;
-}
-
-/* -----------------------------------------------------------------
-   2. LAYOUT UTAMA (HEADER, NAV, MAIN)
-   ----------------------------------------------------------------- */
-header {
-    background: var(--white-color);
-    padding: 1rem 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-header .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.section-nav {
-    background-color: var(--white-color);
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--border-color);
-    text-align: center;
-    position: sticky;
-    top: 70px; /* Sesuaikan dengan tinggi header Anda */
-    z-index: 99;
-}
-
-.section-nav button {
-    margin: 0.25rem 0.5rem;
-    background-color: transparent;
-    color: var(--text-light);
-    font-weight: 500;
-    border: none;
-    border-bottom: 2px solid transparent;
-    padding: 0.5rem 0.25rem;
-    border-radius: 0;
-    transition: color var(--transition-speed), border-color var(--transition-speed);
-}
-.section-nav button:hover {
-    color: var(--primary-dark);
-    transform: none;
-}
-.section-nav button.active {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
-    font-weight: 600;
-}
-
-main {
-    padding: 1.5rem;
-}
-
-.container {
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* -----------------------------------------------------------------
-   3. HALAMAN LOGIN
-   ----------------------------------------------------------------- */
-.login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-}
-
-.login-container {
-    width: 100%;
-    max-width: 400px;
-    background: var(--white-color);
-    padding: 40px 30px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    text-align: center;
-}
-.login-container h2 {
-    margin-bottom: 25px;
-}
-
-/* -----------------------------------------------------------------
-   4. KOMPONEN UTAMA (KARTU, FORM, TOMBOL, TABEL)
-   ----------------------------------------------------------------- */
-.card {
-    background: var(--white-color);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: var(--shadow);
-    transition: box-shadow var(--transition-speed), transform var(--transition-speed);
-}
-.card:hover {
-    /* [BARU] Efek hover halus pada kartu */
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-}
-
-
-.card-header {
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-light);
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-family: var(--font-family);
-    font-size: 1rem;
-    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
-}
-input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-}
-
-textarea { resize: vertical; min-height: 100px; }
-
-/* Tombol (Button) */
-.btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-family: var(--font-family);
-    font-size: 1rem;
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-    transition: all 0.2s ease-in-out;
-}
-.btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-.btn:active { transform: translateY(0); box-shadow: none; }
-
-.btn:disabled, .btn:disabled:hover {
-    background-color: #e9ecef;
-    color: #6c757d;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.btn-primary { background-color: var(--primary-color); color: var(--white-color); }
-.btn-primary:hover { background-color: var(--primary-dark); }
-.btn-accent { background-color: var(--accent-color); color: var(--text-color); }
-.btn-accent:hover { background-color: var(--accent-dark); }
-.btn-success { background-color: var(--success-color); color: var(--white-color); }
-.btn-success:hover { background-color: var(--success-dark); }
-.btn-danger { background-color: var(--danger-color); color: var(--white-color); }
-.btn-danger:hover { background-color: var(--danger-dark); }
-.btn-secondary { background-color: #f8f9fa; color: var(--text-color); border: 1px solid var(--border-color); }
-.btn-secondary:hover { background-color: #e9ecef; }
-.btn-block { width: 100%; display: block; }
-
-/* [BARU] Tombol aksi kecil untuk tabel (edit/hapus) */
-.btn-sm {
-    padding: 0.25rem 0.6rem;
-    font-size: 0.875rem;
-    margin: 0 2px;
-}
-
-/* Tabel */
-.table-container { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-thead { background-color: #f8f9fa; }
-th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-th { font-weight: 600; color: var(--text-light); }
-tbody tr { transition: background-color var(--transition-speed); }
-tbody tr:hover { background-color: var(--secondary-color); }
-
-/* [BARU] Style untuk kontainer riwayat */
-#riwayatContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-}
-#riwayatContainer .card:hover {
-    border-left: 4px solid var(--primary-color);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: var(--shadow-hover);
-}
-#riwayatContainer .card {
-    border-left: 4px solid transparent;
-}
-
-
-/* -----------------------------------------------------------------
-   5. UTILITIES (Pesan Notifikasi, Loading Spinner, Modal)
-   ----------------------------------------------------------------- */
-.status-message {
-    padding: 1rem;
-    margin: 0 1.5rem 1.5rem 1.5rem;
-    border-radius: var(--border-radius);
-    display: none;
-    border: 1px solid transparent;
-    text-align: center;
-    font-weight: 500;
-}
-.status-message.success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
-.status-message.error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
-.status-message.info { background-color: #cce5ff; color: #004085; border-color: #b8daff; }
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(2px);
-}
-
-.spinner {
-    border: 5px solid var(--secondary-color);
-    border-top: 5px solid var(--primary-color);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* -----------------------------------------------------------------
-   6. RESPONSIVE DESIGN
-   ----------------------------------------------------------------- */
-@media (min-width: 768px) {
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .form-grid .form-group-full { grid-column: 1 / -1; }
-}
-
-@media (max-width: 767px) {
-    /* Buat navigasi SPA lebih ramah mobile */
-    .section-nav {
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        padding: 0.5rem 0;
+function showStatusMessage(message, type = 'info', duration = 5000) {
+    const statusEl = document.getElementById('statusMessage');
+    if (statusEl) {
+        statusEl.textContent = message;
+        statusEl.className = `status-message ${type}`;
+        statusEl.style.display = 'block';
+        window.scrollTo(0, 0);
+        setTimeout(() => { statusEl.style.display = 'none'; }, duration);
+    } else {
+        alert(message);
     }
-    .section-nav button {
-        display: inline-block;
-        margin: 0 0.75rem;
+}
+
+function populateDropdown(elementId, options, defaultOptionText = '-- Pilih --') {
+    const select = document.getElementById(elementId);
+    if (select) {
+        const currentValue = select.value;
+        select.innerHTML = `<option value="">${defaultOptionText}</option>`;
+        options.forEach(option => {
+            if (option) select.innerHTML += `<option value="${option}">${option}</option>`;
+        });
+        select.value = currentValue;
     }
-    header, main {
-        padding: 1rem;
+}
+
+function showSection(sectionId) {
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
+    });
+    const activeSection = document.getElementById(sectionId);
+    if (activeSection) {
+        activeSection.style.display = 'block';
+    }
+}
+
+// ====================================================================
+// TAHAP 3: FUNGSI-FUNGSI UTAMA
+// ====================================================================
+
+// --- 3.1. OTENTIKASI & SESI ---
+function checkAuthentication() {
+    const user = sessionStorage.getItem('loggedInUser');
+    if (!user) {
+        if (!window.location.pathname.endsWith('index.html')) {
+            window.location.href = 'index.html';
+        }
+    } else {
+        const userData = JSON.parse(user);
+        const welcomeEl = document.getElementById('welcomeMessage');
+        if (welcomeEl) welcomeEl.textContent = `Selamat Datang, ${userData.nama}!`;
+
+        if (userData.peran && userData.peran.toLowerCase() !== 'admin') {
+            const userManagementButton = document.querySelector('button[data-section="penggunaSection"]');
+            if (userManagementButton) userManagementButton.style.display = 'none';
+        }
+    }
+}
+
+async function handleLogin() {
+    const usernameEl = document.getElementById('username');
+    const passwordEl = document.getElementById('password');
+
+    if (!usernameEl.value || !passwordEl.value) {
+        return showStatusMessage("Username dan password harus diisi.", 'error');
+    }
+    showLoading(true);
+    const passwordHash = CryptoJS.SHA256(passwordEl.value).toString();
+    const formData = new FormData();
+    formData.append('action', 'login');
+    formData.append('username', usernameEl.value);
+    formData.append('passwordHash', passwordHash);
+
+    try {
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        const result = await response.json();
+        if (result.status === "success") {
+            sessionStorage.setItem('loggedInUser', JSON.stringify(result.data));
+            window.location.href = 'dashboard.html';
+        } else {
+            showStatusMessage(result.message, 'error');
+        }
+    } catch (error) {
+        showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function handleLogout() {
+    if (confirm('Apakah Anda yakin ingin logout?')) {
+        sessionStorage.removeItem('loggedInUser');
+        window.location.href = 'index.html';
+    }
+}
+
+// --- 3.2. DASHBOARD & DATA GLOBAL ---
+async function populateAllFilters() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getFilterOptions`);
+        const result = await response.json();
+        if (result.status === 'success') {
+            populateDropdown('filterTahunAjaran', result.data.tahunAjaran, '-- Pilih Tahun Ajaran --');
+            populateDropdown('filterKelas', result.data.kelas, '-- Pilih Kelas --');
+            populateDropdown('filterMataPelajaran', result.data.mataPelajaran, '-- Pilih Mapel --');
+            populateDropdown('riwayatFilterKelas', result.data.kelas, '-- Semua Kelas --');
+            populateDropdown('riwayatFilterMapel', result.data.mataPelajaran, '-- Semua Mapel --');
+        }
+    } catch (error) {
+        console.error("Gagal memuat filter:", error);
+    }
+}
+
+async function loadDashboardStats() {
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getDashboardStats`);
+        const result = await response.json();
+        if (result.status === 'success') {
+            document.getElementById('statTotalJurnal').textContent = result.data.totalJurnalBulanIni;
+            document.getElementById('statKehadiran').textContent = result.data.tingkatKehadiran;
+            document.getElementById('statMapelTeratas').textContent = result.data.mapelTeratas;
+        }
+    } catch (error) {
+        console.error("Gagal memuat statistik:", error);
+    }
+}
+
+
+// --- 3.3. MANAJEMEN SISWA (CRUD) ---
+async function searchSiswa(forceRefresh = false) {
+    const searchTerm = document.getElementById('nisnSearchInput').value.toLowerCase();
+    const tableBody = document.getElementById('siswaResultsTableBody');
+    if (!tableBody) return;
+    
+    if (!forceRefresh && !searchTerm && cachedSiswaData.length > 0) {
+        renderSiswaTable(cachedSiswaData);
+        return;
     }
 
-    /* Tabel responsif */
-    thead { display: none; }
-    tr { display: block; border: 1px solid var(--border-color); border-radius: var(--border-radius); margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background: var(--white-color); }
-    td { display: block; text-align: right; padding-left: 50%; position: relative; border-bottom: 1px solid var(--border-color); padding-top: 0.75rem; padding-bottom: 0.75rem; }
-    td:last-child { border-bottom: none; }
-    td::before { content: attr(data-label); position: absolute; left: 1rem; width: calc(50% - 2rem); text-align: left; font-weight: 600; color: var(--text-color); }
+    showLoading(true);
+    tableBody.innerHTML = '<tr><td colspan="5">Mencari data siswa...</td></tr>';
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=searchSiswa&searchTerm=${encodeURIComponent(searchTerm)}`);
+        const result = await response.json();
+        if (result.status === 'success') {
+            if (!searchTerm) cachedSiswaData = result.data;
+            renderSiswaTable(result.data);
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="5">Gagal memuat: ${result.message}</td></tr>`;
+        }
+    } catch (error) {
+        showStatusMessage('Terjadi kesalahan jaringan saat mencari siswa.', 'error');
+        tableBody.innerHTML = '<tr><td colspan="5">Gagal terhubung ke server.</td></tr>';
+    } finally {
+        showLoading(false);
+    }
 }
+
+function renderSiswaTable(siswaArray) {
+    const tableBody = document.getElementById('siswaResultsTableBody');
+    tableBody.innerHTML = '';
+    if (siswaArray.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5">Tidak ada data siswa yang ditemukan.</td></tr>';
+        return;
+    }
+    siswaArray.forEach(siswa => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td data-label="NISN">${siswa.NISN}</td>
+            <td data-label="Nama">${siswa.Nama}</td>
+            <td data-label="Kelas">${siswa.Kelas}</td>
+            <td data-label="Tahun Ajaran">${siswa.TahunAjaran || ''}</td>
+            <td data-label="Aksi">
+                <button class="btn btn-sm btn-secondary" onclick="editSiswaHandler('${siswa.NISN}')">Ubah</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSiswaHandler('${siswa.NISN}')">Hapus</button>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+    });
+}
+
+async function saveSiswa() {
+    const form = document.getElementById('formSiswa');
+    const formData = new FormData(form);
+    const oldNisn = document.getElementById('formNisnOld').value;
+    const action = oldNisn ? 'updateSiswa' : 'addSiswa';
+    formData.append('action', action);
+    if (oldNisn) formData.append('oldNisn', oldNisn);
+    
+    showLoading(true);
+    try {
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        const result = await response.json();
+        if (result.status === 'success') {
+            showStatusMessage(result.message, 'success');
+            resetFormSiswa();
+            searchSiswa(true);
+        } else {
+            showStatusMessage(`Gagal: ${result.message}`, 'error');
+        }
+    } catch (error) {
+        showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function editSiswaHandler(nisn) {
+    const siswa = cachedSiswaData.find(s => s.NISN == nisn);
+    if (!siswa) {
+        showStatusMessage('Data siswa tidak ditemukan di cache.', 'error');
+        return;
+    }
+    document.getElementById('formNisn').value = siswa.NISN;
+    document.getElementById('formNama').value = siswa.Nama;
+    document.getElementById('formKelas').value = siswa.Kelas;
+    document.getElementById('formTahunAjaran').value = siswa.TahunAjaran;
+    document.getElementById('formMapel').value = Array.isArray(siswa.MataPelajaran) ? siswa.MataPelajaran.join(', ') : (siswa.MataPelajaran || '');
+    document.getElementById('formNisnOld').value = siswa.NISN;
+
+    const saveButton = document.getElementById('saveSiswaButton');
+    saveButton.textContent = 'Update Data Siswa';
+    saveButton.classList.remove('btn-accent');
+    saveButton.classList.add('btn-primary');
+    document.getElementById('formSiswa').scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetFormSiswa() {
+    document.getElementById('formSiswa').reset();
+    document.getElementById('formNisnOld').value = '';
+    const saveButton = document.getElementById('saveSiswaButton');
+    saveButton.textContent = 'Simpan Data Siswa';
+    saveButton.classList.remove('btn-primary');
+    saveButton.classList.add('btn-accent');
+}
+
+async function deleteSiswaHandler(nisn) {
+    if (confirm(`Apakah Anda yakin ingin menghapus siswa dengan NISN: ${nisn}?`)) {
+        showLoading(true);
+        const formData = new FormData();
+        formData.append('action', 'deleteSiswa');
+        formData.append('nisn', nisn);
+        try {
+            const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+            const result = await response.json();
+            if (result.status === 'success') {
+                showStatusMessage(result.message, 'success');
+                searchSiswa(true);
+            } else {
+                showStatusMessage(`Gagal menghapus: ${result.message}`, 'error');
+            }
+        } catch (error) {
+            showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+}
+
+function exportSiswaToExcel() {
+    const table = document.querySelector("#siswaSection table");
+    if (!table || table.rows.length <= 1) {
+        showStatusMessage('Tidak ada data pada tabel untuk diekspor.', 'error');
+        return;
+    }
+    try {
+        const wb = XLSX.utils.table_to_book(table, { sheet: "Daftar Siswa" });
+        XLSX.writeFile(wb, "Daftar_Siswa.xlsx");
+        showStatusMessage('Ekspor berhasil!', 'success');
+    } catch (error) {
+        showStatusMessage('Gagal melakukan ekspor.', 'error');
+    }
+}
+
+// --- 3.4. INPUT JURNAL & PRESENSI ---
+
+async function loadSiswaForPresensi() {
+    const kelas = document.getElementById('filterKelas').value;
+    const tahunAjaran = document.getElementById('filterTahunAjaran').value;
+    const tableBody = document.getElementById('presensiTableBody');
+
+    if (!kelas || !tahunAjaran) {
+        return showStatusMessage('Pilih Tahun Ajaran dan Kelas terlebih dahulu.', 'info');
+    }
+    showLoading(true);
+    tableBody.innerHTML = '<tr><td colspan="3">Memuat data siswa...</td></tr>';
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getSiswaForPresensi&kelas=${kelas}&tahunAjaran=${tahunAjaran}`);
+        const result = await response.json();
+        tableBody.innerHTML = '';
+        if (result.status === 'success' && result.data.length > 0) {
+            result.data.forEach(siswa => {
+                const tr = document.createElement('tr');
+                tr.dataset.nisn = siswa.NISN; // Simpan NISN dan Nama di elemen
+                tr.dataset.nama = siswa.Nama;
+                tr.innerHTML = `
+                    <td data-label="NISN">${siswa.NISN}</td>
+                    <td data-label="Nama">${siswa.Nama}</td>
+                    <td data-label="Kehadiran">
+                        <select class="kehadiran-status" style="width:100%; padding: 0.5rem;">
+                            <option value="Hadir" selected>Hadir</option>
+                            <option value="Sakit">Sakit</option>
+                            <option value="Izin">Izin</option>
+                            <option value="Alfa">Alfa</option>
+                        </select>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="3">Tidak ada siswa yang ditemukan untuk kelas dan tahun ajaran ini.</td></tr>';
+        }
+    } catch (error) {
+        showStatusMessage('Gagal memuat siswa: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function submitJurnal() {
+    // 1. Kumpulkan data detail jurnal
+    const detailJurnal = {
+        tahunAjaran: document.getElementById('filterTahunAjaran').value,
+        kelas: document.getElementById('filterKelas').value,
+        mataPelajaran: document.getElementById('filterMataPelajaran').value,
+        tanggal: document.getElementById('tanggalPembelajaran').value,
+        periode: document.getElementById('periodePembelajaran').value,
+        materi: document.getElementById('materiPembelajaran').value,
+        catatan: document.getElementById('catatanPembelajaran').value,
+    };
+
+    // Validasi
+    for (const key in detailJurnal) {
+        if (!detailJurnal[key] && key !== 'catatan' && key !== 'periode') {
+            return showStatusMessage(`Harap isi kolom "${key}"`, 'error');
+        }
+    }
+
+    // 2. Kumpulkan data presensi
+    const presensiRows = document.querySelectorAll('#presensiTableBody tr');
+    if (presensiRows.length === 0 || presensiRows[0].cells.length < 3) {
+        return showStatusMessage('Harap muat data siswa untuk presensi terlebih dahulu.', 'error');
+    }
+    const dataPresensi = Array.from(presensiRows).map(row => {
+        return {
+            nisn: row.dataset.nisn,
+            nama: row.dataset.nama,
+            status: row.querySelector('.kehadiran-status').value
+        };
+    });
+
+    // 3. Gabungkan menjadi satu paket data
+    const jurnalData = {
+        detail: detailJurnal,
+        presensi: dataPresensi
+    };
+
+    // 4. Kirim ke backend (menggunakan JSON body)
+    showLoading(true);
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=submitJurnal`, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Sesuai backend kasir
+            body: JSON.stringify(jurnalData)
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            showStatusMessage(result.message, 'success');
+            document.getElementById('formJurnal').reset();
+            document.getElementById('presensiTableBody').innerHTML = '';
+        } else {
+            showStatusMessage(`Gagal menyimpan jurnal: ${result.message}`, 'error');
+        }
+    } catch (error) {
+        showStatusMessage('Terjadi kesalahan jaringan: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// --- 3.5. RIWAYAT JURNAL ---
+async function loadRiwayatJurnal() {
+    const kelas = document.getElementById('riwayatFilterKelas').value;
+    const mapel = document.getElementById('riwayatFilterMapel').value;
+    const container = document.getElementById('riwayatContainer');
+    container.innerHTML = '<p>Memuat riwayat...</p>';
+    showLoading(true);
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getJurnalHistory&kelas=${kelas}&mapel=${mapel}`);
+        const result = await response.json();
+        container.innerHTML = '';
+        if (result.status === 'success' && result.data.length > 0) {
+            cachedJurnalHistory = result.data; // Simpan di cache
+            result.data.forEach(jurnal => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header" style="padding-bottom: 0.5rem; margin-bottom: 0.5rem;">${jurnal.MataPelajaran} - ${jurnal.Kelas}</div>
+                    <small style="color: var(--text-light);">${new Date(jurnal.Tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</small>
+                    <p style="margin-top: 10px; font-size: 0.9rem;"><strong>Materi:</strong> ${jurnal.Materi.substring(0, 100)}...</p>
+                    <p style="font-size: 0.9rem;"><strong>Hadir:</strong> ${jurnal.presensi.filter(p => p.Status === 'Hadir').length}/${jurnal.presensi.length} siswa</p>
+                    <button class="btn btn-sm btn-secondary" style="margin-top: 10px;" onclick="showJurnalDetail('${jurnal.ID}')">Lihat Detail</button>
+                `;
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Tidak ada riwayat jurnal yang ditemukan.</p>';
+        }
+    } catch(error) {
+        showStatusMessage('Gagal memuat riwayat: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function showJurnalDetail(jurnalId) {
+    const jurnal = cachedJurnalHistory.find(j => j.ID == jurnalId);
+    if (!jurnal) return alert('Detail jurnal tidak ditemukan di cache!');
+
+    let presensiList = jurnal.presensi.map(p => ` - ${p.Nama}: ${p.Status}`).join('\n');
+    if (!presensiList) presensiList = "Tidak ada data presensi.";
+
+    const detailText = `
+DETAIL JURNAL
+---------------------------------
+Tanggal: ${new Date(jurnal.Tanggal).toLocaleDateString('id-ID')}
+Kelas: ${jurnal.Kelas}
+Mata Pelajaran: ${jurnal.MataPelajaran}
+Periode: ${jurnal.Periode || 'N/A'}
+---------------------------------
+Materi:
+${jurnal.Materi}
+
+Catatan:
+${jurnal.Catatan || 'Tidak ada catatan.'}
+---------------------------------
+PRESENSI SISWA:
+${presensiList}
+    `;
+    alert(detailText);
+}
+
+
+// ====================================================================
+// TAHAP 4: INISIALISASI DAN EVENT LISTENERS
+// ====================================================================
+
+function setupDashboardListeners() {
+    document.getElementById('logoutButton')?.addEventListener('click', handleLogout);
+
+    const navButtons = document.querySelectorAll('.section-nav button');
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            const sectionId = button.dataset.section;
+            showSection(sectionId);
+            if (sectionId === 'riwayatSection') {
+                loadRiwayatJurnal();
+            }
+        });
+    });
+
+    // Form Jurnal
+    document.getElementById('loadSiswaButton')?.addEventListener('click', loadSiswaForPresensi);
+    document.getElementById('submitJurnalButton')?.addEventListener('click', submitJurnal);
+
+    // Form Riwayat
+    document.getElementById('filterRiwayatButton')?.addEventListener('click', loadRiwayatJurnal);
+
+    // Form Siswa
+    document.getElementById('formSiswa')?.addEventListener('submit', (e) => { e.preventDefault(); saveSiswa(); });
+    document.getElementById('resetSiswaButton')?.addEventListener('click', resetFormSiswa);
+    document.getElementById('searchButton')?.addEventListener('click', () => searchSiswa(true));
+    document.getElementById('exportSiswaExcel')?.addEventListener('click', exportSiswaToExcel);
+    document.getElementById('nisnSearchInput')?.addEventListener('keyup', (e) => {
+        clearTimeout(searchTimeout);
+        if (e.key === 'Enter') {
+            searchSiswa(true);
+        } else {
+            searchTimeout = setTimeout(() => searchSiswa(true), 400);
+        }
+    });
+}
+
+function initDashboardPage() {
+    checkAuthentication();
+    setupDashboardListeners();
+    
+    populateAllFilters();
+    loadDashboardStats();
+    searchSiswa();
+    
+    showSection('jurnalSection');
+    document.querySelector('.section-nav button[data-section="jurnalSection"]')?.classList.add('active');
+}
+
+function initLoginPage() {
+    checkAuthentication();
+    document.getElementById('loginButton')?.addEventListener('click', handleLogin);
+    document.querySelector('.login-container form')?.addEventListener('submit', (e) => { e.preventDefault(); handleLogin(); });
+}
+
+// ====================================================================
+// TAHAP 5: TITIK MASUK APLIKASI (ENTRY POINT)
+// ====================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const pageName = window.location.pathname.split("/").pop();
+    if (pageName === 'dashboard.html') {
+        initDashboardPage();
+    } else if (pageName === 'index.html' || pageName === '') {
+        initLoginPage();
+    }
+});
