@@ -444,39 +444,41 @@ function populateDropdown(elementId, options) {
 
 
 // -----------------------------------------------------------------
-// INISIALISASI (Event Listeners)
+// INISIALISASI (Event Listeners) - VERSI BARU YANG BENAR
 // -----------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     const page = window.location.pathname.split("/").pop();
 
-    if (page === 'index.html' || page === '') {
-        // Halaman Login
+    // Logika untuk Halaman Login
+    if (page === 'index.html' || page === '' || page === 'jurnalpembelajaran') {
         const loginButton = document.getElementById('loginButton');
-        if (loginButton) loginButton.addEventListener('click', handleLogin);
-    } else {
-        // Halaman yang dilindungi
+        if (loginButton) {
+            loginButton.addEventListener('click', handleLogin);
+        }
+    } 
+    // Logika untuk Halaman Dashboard Utama
+    else if (page === 'dashboard.html') {
+        // Pertama, pastikan pengguna sudah login
         checkAuthentication();
         
-        // Listener umum untuk halaman dashboard
+        // Lampirkan listener umum
         const logoutButton = document.getElementById('logoutButton');
         if (logoutButton) logoutButton.addEventListener('click', handleLogout);
 
-        // Listener spesifik per halaman
-        if (page === 'jurnal.html') {
-            populateJurnalFilters();
-            document.getElementById('loadSiswaButton').addEventListener('click', loadSiswaForPresensi);
-            document.getElementById('submitJurnalButton').addEventListener('click', submitJurnal);
-        }
+        // --- Aktifkan SEMUA fitur dashboard ---
 
-        if (page === 'siswa.html') {
-            document.getElementById('searchButton').addEventListener('click', searchSiswaByNISN);
-            document.getElementById('saveSiswaButton').addEventListener('click', saveSiswa);
-        }
+        // Fitur Jurnal Pembelajaran
+        populateJurnalFilters(); // Langsung panggil untuk mengisi dropdown
+        document.getElementById('loadSiswaButton').addEventListener('click', loadSiswaForPresensi);
+        document.getElementById('submitJurnalButton').addEventListener('click', submitJurnal);
 
-        if (page === 'pengguna.html') {
-            loadUsers();
-            document.getElementById('saveUserButton').addEventListener('click', saveUser);
-            document.getElementById('resetUserButton').addEventListener('click', resetUserForm);
-        }
+        // Fitur Database Siswa
+        document.getElementById('searchButton').addEventListener('click', searchSiswaByNISN);
+        document.getElementById('saveSiswaButton').addEventListener('click', saveSiswa);
+
+        // Fitur Role Pengguna
+        loadUsers(); // Langsung panggil untuk menampilkan daftar pengguna
+        document.getElementById('saveUserButton').addEventListener('click', saveUser);
+        document.getElementById('resetUserButton').addEventListener('click', resetUserForm);
     }
 });
