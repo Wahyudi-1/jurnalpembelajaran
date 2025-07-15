@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!-- ========================================================== -->
-    <!-- METADATA & KONFIGURASI HALAMAN                             -->
-    <!-- ========================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Jurnal Online</title>
-
-    <!-- ========================================================== -->
-    <!-- STYLESHEETS & FONTS                                        -->
-    <!-- ========================================================== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,10 +12,6 @@
 </head>
 
 <body>
-
-    <!-- ========================================================== -->
-    <!-- HEADER APLIKASI                                            -->
-    <!-- ========================================================== -->
     <header>
         <div class="logo">Jurnal Online</div>
         <nav>
@@ -31,9 +20,6 @@
         </nav>
     </header>
 
-    <!-- ========================================================== -->
-    <!-- NAVIGASI UTAMA (TABS)                                      -->
-    <!-- ========================================================== -->
     <nav class="section-nav">
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
@@ -41,66 +27,38 @@
         <button data-section="penggunaSection" class="btn btn-nav">Manajemen Pengguna</button>
     </nav>
 
-    <!-- ========================================================== -->
-    <!-- KONTEN UTAMA APLIKASI                                      -->
-    <!-- ========================================================== -->
     <main class="container">
-        
         <div id="statusMessage" class="status-message" style="display: none;"></div>
         <div id="loadingIndicator" class="loading-overlay" style="display: none;">
             <div class="spinner"></div>
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 1: INPUT JURNAL & DASHBOARD STATISTIK           -->
+        <!-- Bagian 1: INPUT JURNAL                                 -->
         <!-- ====================================================== -->
         <div id="jurnalSection" class="content-section" style="display: none;">
-            
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                 <div class="card"><h5 style="color: var(--text-light); margin-bottom: 0.5rem;">Jurnal Bulan Ini</h5><h2 id="statTotalJurnal">...</h2></div>
                 <div class="card"><h5 style="color: var(--text-light); margin-bottom: 0.5rem;">Tingkat Kehadiran</h5><h2 id="statKehadiran">...</h2></div>
                 <div class="card"><h5 style="color: var(--text-light); margin-bottom: 0.5rem;">Mapel Terpopuler</h5><h2 id="statMapelTeratas">...</h2></div>
             </div>
-
             <div class="card">
                 <div class="card-header">Input Jurnal Pembelajaran</div>
                 <form id="formJurnal">
-                    <!-- [DIPERBAIKI] Atribut 'disabled' ditambahkan untuk filter bertingkat -->
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="filterTahunAjaran">Tahun Ajaran</label>
-                            <select id="filterTahunAjaran" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="filterSemester">Semester</label>
-                            <select id="filterSemester" required disabled></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="filterKelas">Kelas</label>
-                            <select id="filterKelas" required disabled></select>
-                        </div>
+                        <div class="form-group"><label for="filterTahunAjaran">Tahun Ajaran</label><select id="filterTahunAjaran" required></select></div>
+                        <div class="form-group"><label for="filterSemester">Semester</label><select id="filterSemester" required disabled></select></div>
+                        <div class="form-group"><label for="filterKelas">Kelas</label><select id="filterKelas" required disabled></select></div>
                     </div>
                     <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
-                    
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="filterMataPelajaran">Mata Pelajaran</label>
-                            <select id="filterMataPelajaran" required disabled></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="tanggalPembelajaran">Tanggal Pembelajaran</label>
-                            <input type="date" id="tanggalPembelajaran" required>
-                        </div>
+                        <div class="form-group"><label for="filterMataPelajaran">Mata Pelajaran</label><select id="filterMataPelajaran" required disabled></select></div>
+                        <div class="form-group"><label for="tanggalPembelajaran">Tanggal Pembelajaran</label><input type="date" id="tanggalPembelajaran" required></div>
                     </div>
-
-                    <div class="form-group" style="margin-top: 1.5rem;">
-                        <button type="button" id="loadSiswaButton" class="btn btn-secondary btn-block">Tampilkan Siswa untuk Presensi</button>
-                    </div>
-
+                    <div class="form-group" style="margin-top: 1.5rem;"><button type="button" id="loadSiswaButton" class="btn btn-secondary btn-block">Tampilkan Siswa untuk Presensi</button></div>
                     <div class="form-group"><label for="periodePembelajaran">Periode Pembelajaran (Jam ke-)</label><input type="text" id="periodePembelajaran" placeholder="Contoh: 1-2, 5-6"></div>
                     <div class="form-group"><label for="materiPembelajaran">Materi yang Diajarkan</label><textarea id="materiPembelajaran" rows="3" required></textarea></div>
                     <div class="form-group"><label for="catatanPembelajaran">Catatan Selama Pembelajaran</label><textarea id="catatanPembelajaran" rows="3"></textarea></div>
-                    
                     <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Presensi Siswa</h4>
                     <div class="table-container">
                         <table>
@@ -113,15 +71,18 @@
             </div>
         </div>
 
-        <!-- Bagian lain dari HTML (Riwayat, Siswa, Pengguna) tetap sama -->
+        <!-- ====================================================== -->
+        <!-- Bagian 2: RIWAYAT JURNAL                               -->
+        <!-- ====================================================== -->
         <div id="riwayatSection" class="content-section" style="display: none;">
             <div class="card">
                 <div class="card-header">Riwayat Jurnal Pembelajaran</div>
+                <!-- [DIPERBAIKI] Atribut 'disabled' ditambahkan untuk filter bertingkat riwayat -->
                 <div id="riwayatFilterForm" class="form-grid">
                     <div class="form-group"><label for="riwayatFilterTahunAjaran">Tahun Ajaran</label><select id="riwayatFilterTahunAjaran"></select></div>
-                    <div class="form-group"><label for="riwayatFilterSemester">Semester</label><select id="riwayatFilterSemester"></select></div>
-                    <div class="form-group"><label for="riwayatFilterKelas">Kelas</label><select id="riwayatFilterKelas"></select></div>
-                    <div class="form-group"><label for="riwayatFilterMapel">Mata Pelajaran</label><select id="riwayatFilterMapel"></select></div>
+                    <div class="form-group"><label for="riwayatFilterSemester">Semester</label><select id="riwayatFilterSemester" disabled></select></div>
+                    <div class="form-group"><label for="riwayatFilterKelas">Kelas</label><select id="riwayatFilterKelas" disabled></select></div>
+                    <div class="form-group"><label for="riwayatFilterMapel">Mata Pelajaran</label><select id="riwayatFilterMapel" disabled></select></div>
                     <div class="form-group"><label for="riwayatFilterTanggalMulai">Dari Tanggal</label><input type="date" id="riwayatFilterTanggalMulai"></div>
                     <div class="form-group"><label for="riwayatFilterTanggalSelesai">Sampai Tanggal</label><input type="date" id="riwayatFilterTanggalSelesai"></div>
                     <div class="form-group form-group-full"><button type="button" id="filterRiwayatButton" class="btn btn-primary">Terapkan Filter</button><button type="button" id="exportRiwayatButton" class="btn btn-success" style="margin-left: 10px; display: none;">Export ke Excel</button></div>
@@ -136,16 +97,21 @@
                 </div>
             </div>
         </div>
+
+        <!-- ====================================================== -->
+        <!-- Bagian 3: MANAJEMEN SISWA                              -->
+        <!-- ====================================================== -->
         <div id="siswaSection" class="content-section" style="display: none;">
             <div class="card">
                 <div class="card-header">Manajemen Database Siswa</div>
+                <!-- [DIPERBAIKI] Atribut 'name' disesuaikan dengan backend -->
                 <form id="formSiswa" class="form-container">
                     <input type="hidden" id="formNisnOld">
                     <div class="form-group"><label for="formNisn">NISN</label><input type="number" id="formNisn" name="NISN" placeholder="NISN Siswa" required></div>
                     <div class="form-group"><label for="formNama">Nama Lengkap</label><input type="text" id="formNama" name="Nama" placeholder="Nama Siswa" required></div>
                     <div class="form-group"><label for="formKelas">Kelas</label><input type="text" id="formKelas" name="Kelas" placeholder="Contoh: X-A"></div>
                     <div class="form-group"><label for="formTahunAjaran">Tahun Ajaran</label><input type="text" id="formTahunAjaran" name="TahunAjaran" placeholder="Contoh: 2024/2025"></div>
-                    <div class="form-group"><label for="formMapel">Mata Pelajaran</label><input type="text" id="formMapel" name="MataPelajaran" placeholder="Contoh: Matematika Wajib"></div>
+                    <div class="form-group"><label for="formMapel">Mata Pelajaran (pisahkan koma jika lebih dari satu)</label><input type="text" id="formMapel" name="MataPelajaran" placeholder="Contoh: Matematika, Fisika"></div>
                     <div class="form-group"><label for="formSemesterSiswa">Semester</label><input type="text" id="formSemesterSiswa" name="Semester" placeholder="Contoh: Ganjil"></div>
                     <div class="form-actions"><button type="submit" id="saveSiswaButton" class="btn btn-accent">Simpan Data Siswa</button><button type="button" id="resetSiswaButton" class="btn btn-secondary">Batal</button></div>
                 </form>
@@ -163,6 +129,10 @@
                 </div>
             </div>
         </div>
+
+        <!-- ====================================================== -->
+        <!-- Bagian 4: MANAJEMEN PENGGUNA                           -->
+        <!-- ====================================================== -->
         <div id="penggunaSection" class="content-section" style="display: none;">
             <div class="card">
                 <div class="card-header">Manajemen Pengguna</div>
@@ -186,11 +156,7 @@
         </div>
     </main>
     
-    <!-- ========================================================== -->
-    <!-- JAVASCRIPT LIBRARIES & SCRIPT                              -->
-    <!-- ========================================================== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> 
     <script src="app.js"></script>
-
 </body>
 </html>
