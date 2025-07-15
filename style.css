@@ -2,7 +2,7 @@
  * =================================================================
  * CSS UTAMA - JURNAL ONLINE (VERSI 3.0)
  * =================================================================
- * @version 3.2 - Riwayat Jurnal Refactor
+ * @version 3.1 - Added password toggle styles.
  * @author Gemini AI Expert for User
  *
  * Struktur File:
@@ -137,7 +137,7 @@ main.container {
 }
 
 .login-illustration {
-    background-color: #eef5ff;
+    background-color: #eef5ff; /* Warna biru muda yang lembut */
     padding: 40px;
     display: flex;
     align-items: center;
@@ -255,6 +255,14 @@ textarea {
     box-shadow: none; 
 }
 
+.btn:disabled, .btn:disabled:hover {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .btn-primary { background-color: var(--primary-color); color: var(--white-color); }
 .btn-primary:hover { background-color: var(--primary-dark); }
 .btn-accent { background-color: var(--accent-color); color: var(--text-color); }
@@ -311,8 +319,22 @@ tbody tr:hover {
    5. KOMPONEN SPESIFIK
    ----------------------------------------------------------------- */
    
-/* [DIHAPUS] Kontainer Riwayat Jurnal dengan style kartu tidak lagi digunakan */
-/* .riwayat-grid { ... } */
+/* Kontainer Riwayat Jurnal */
+.riwayat-grid { /* Ganti nama dari #riwayatContainer ke kelas */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.riwayat-grid .card {
+    border-left: 4px solid transparent;
+}
+
+.riwayat-grid .card:hover {
+    border-left-color: var(--primary-color);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+}
 
 /* Helper Text untuk form (cth: di bawah input password) */
 .form-helper-text {
@@ -322,7 +344,7 @@ tbody tr:hover {
     display: inline-block;
 }
 
-/* Style untuk toggle password */
+/* [BARU] Style untuk toggle password */
 .password-wrapper {
     position: relative;
 }
@@ -406,7 +428,7 @@ tbody tr:hover {
         min-height: 0;
     }
     .login-illustration {
-        display: none; 
+        display: none; /* Sembunyikan ilustrasi pada layar kecil */
     }
     .login-form-container {
         padding: 50px 30px;
@@ -416,12 +438,12 @@ tbody tr:hover {
 /* Untuk Mobile */
 @media (max-width: 767px) {
     /* Layout Form Grid menjadi 1 kolom */
-    .form-grid, .form-container {
+    .form-container { /* Ganti dari .form-grid ke .form-container */
         display: grid; 
         grid-template-columns: 1fr; 
-        gap: 0 1.5rem;
+        gap: 0 1.5rem; /* Hanya gap kolom, tidak ada gap baris */
     }
-    .form-grid .form-group-full, .form-container .form-group-full { 
+    .form-container .form-group-full { 
         grid-column: 1 / -1; 
     }
 
@@ -431,10 +453,10 @@ tbody tr:hover {
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
         padding: 0.5rem 0;
-        scrollbar-width: none;
+        scrollbar-width: none; /* Firefox */
     }
     .section-nav::-webkit-scrollbar {
-        display: none;
+        display: none; /* Chrome, Safari, Opera */
     }
     .section-nav button {
         display: inline-block;
