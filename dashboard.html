@@ -41,7 +41,6 @@
     <!-- NAVIGASI UTAMA (TABS)                                      -->
     <!-- ========================================================== -->
     <nav class="section-nav">
-        <!-- Atribut `data-section` harus cocok dengan `id` dari .content-section di bawah -->
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
         <button data-section="siswaSection" class="btn btn-nav">Manajemen Siswa</button>
@@ -53,7 +52,6 @@
     <!-- ========================================================== -->
     <main class="container">
         
-        <!-- Elemen Global untuk Notifikasi & Loading -->
         <div id="statusMessage" class="status-message" style="display: none;"></div>
         <div id="loadingIndicator" class="loading-overlay" style="display: none;">
             <div class="spinner"></div>
@@ -64,7 +62,6 @@
         <!-- ====================================================== -->
         <div id="jurnalSection" class="content-section" style="display: none;">
             
-            <!-- Kartu Statistik -->
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                 <div class="card">
                     <h5 style="color: var(--text-light); margin-bottom: 0.5rem;">Jurnal Bulan Ini</h5>
@@ -80,16 +77,22 @@
                 </div>
             </div>
 
-            <!-- Form Input Jurnal -->
             <div class="card">
                 <div class="card-header">Input Jurnal Pembelajaran</div>
                 <form id="formJurnal">
-                    <!-- Filter Awal -->
+                    <!-- [DIPERBAIKI] Filter Awal dengan tambahan Semester -->
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="filterTahunAjaran">Tahun Ajaran</label>
                             <select id="filterTahunAjaran" required></select>
                         </div>
+                        
+                        <!-- [BARU] Dropdown untuk Semester ditambahkan di sini -->
+                        <div class="form-group">
+                            <label for="filterSemester">Semester</label>
+                            <select id="filterSemester" required></select>
+                        </div>
+
                         <div class="form-group">
                             <label for="filterKelas">Kelas</label>
                             <select id="filterKelas" required></select>
@@ -125,7 +128,6 @@
                         <textarea id="catatanPembelajaran" rows="3"></textarea>
                     </div>
 
-                    <!-- Tabel Presensi Siswa -->
                     <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Presensi Siswa</h4>
                     <div class="table-container">
                         <table>
@@ -178,7 +180,7 @@
                 <div class="card-header">Manajemen Database Siswa</div>
                 
                 <form id="formSiswa" class="form-container">
-                    <input type="hidden" id="formNisnOld"> <!-- Untuk mode edit -->
+                    <input type="hidden" id="formNisnOld">
                     <div class="form-group">
                         <label for="formNisn">NISN</label>
                         <input type="number" id="formNisn" name="NISN" placeholder="NISN Siswa" required>
@@ -195,9 +197,14 @@
                         <label for="formTahunAjaran">Tahun Ajaran</label>
                         <input type="text" id="formTahunAjaran" name="TahunAjaran" placeholder="Contoh: 2024/2025">
                     </div>
-                    <div class="form-group form-group-full">
+                    <div class="form-group">
                         <label for="formMapel">Mata Pelajaran</label>
                         <input type="text" id="formMapel" name="MataPelajaran" placeholder="Contoh: Matematika Wajib">
+                    </div>
+                    <!-- [BARU] Field untuk Semester di Manajemen Siswa -->
+                    <div class="form-group form-group-full">
+                        <label for="formSemester">Semester</label>
+                        <input type="text" id="formSemester" name="Semester" placeholder="Contoh: Ganjil">
                     </div>
                     <div class="form-actions">
                         <button type="submit" id="saveSiswaButton" class="btn btn-accent">Simpan Data Siswa</button>
@@ -237,11 +244,8 @@
             <div class="card">
                 <div class="card-header">Manajemen Pengguna</div>
                 
-                <!-- [DIPERBAIKI] Form dengan ID standar untuk interaksi JS -->
                 <form id="formPengguna" class="form-container">
-                    <!-- Input tersembunyi untuk membedakan mode tambah/update -->
                     <input type="hidden" id="formUsernameOld">
-                    
                     <div class="form-group">
                         <label for="formNamaPengguna">Nama Lengkap</label>
                         <input type="text" id="formNamaPengguna" placeholder="Contoh: Budi Santoso" required>
@@ -260,7 +264,6 @@
                         <select id="formPeran" required>
                             <option value="Admin">Admin</option>
                             <option value="Guru">Guru</option>
-                            <option value="Murid">Murid</option>
                         </select>
                     </div>
                     <div class="form-actions">
@@ -275,17 +278,9 @@
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Nama Lengkap</th>
-                                <th>Username</th>
-                                <th>Peran</th>
-                                <th>Aksi</th>
-                            </tr>
+                            <tr><th>Nama Lengkap</th><th>Username</th><th>Peran</th><th>Aksi</th></tr>
                         </thead>
-                        <!-- [DIPERBAIKI] ID tbody disesuaikan dengan JS -->
-                        <tbody id="penggunaResultsTableBody">
-                            <!-- Data pengguna akan dimuat di sini oleh JavaScript -->
-                        </tbody>
+                        <tbody id="penggunaResultsTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -296,14 +291,7 @@
     <!-- ========================================================== -->
     <!-- JAVASCRIPT LIBRARIES & SCRIPT                              -->
     <!-- ========================================================== -->
-    
-    <!-- [DIHAPUS] Library CryptoJS tidak lagi diperlukan oleh frontend -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script> -->
-    
-    <!-- Library untuk fitur Export ke Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> 
-    
-    <!-- Script utama aplikasi -->
     <script src="app.js"></script>
 
 </body>
