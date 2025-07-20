@@ -1,13 +1,13 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI FINAL DENGAN AUTOCOMPLETE)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN UPDATE NILAI)
  * =================================================================
- * @version 5.3 - Penambahan Fitur Autocomplete Jenis Penilaian
+ * @version 5.4 - Penambahan Fitur Update Nilai
  * @author Gemini AI Expert for User
  *
  * FITUR UTAMA VERSI INI:
- * - [FITUR] Menambahkan saran/autocomplete pada input "Jenis Penilaian" berdasarkan data yang ada.
- * - [UPDATE] Menggunakan URL Web App baru sesuai permintaan.
+ * - [FITUR] Jika "Jenis Penilaian" sudah ada, nilai yang tersimpan akan dimuat otomatis.
+ * - [FITUR] Tombol submit nilai akan berubah menjadi "Update Nilai" jika data sudah ada.
  * - [OPTIMASI] Melanjutkan penggunaan caching data untuk performa yang cepat.
  */
 
@@ -15,12 +15,12 @@
 // TAHAP 1: KONFIGURASI GLOBAL DAN STATE APLIKASI
 // ====================================================================
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgUzwur9b4KDLCVtZ70OeDX-X1k5iAgRLtX0X-M2kvqBUMxYslMnKEdjOC3pOFQMiJZQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6XX9ZJ1xxKo8CRIGf60hsbRPFI9enVRL6mgdBW2oGCZ9c0ySKA8GSlgJ11Oeeyi6fNA/exec";
 
 let cachedSiswaData = [];
 let cachedJurnalHistory = [];
 let cachedUsers = [];
-let cachedJenisNilai = []; // Cache untuk saran Jenis Penilaian
+let cachedJenisNilai = [];
 let relationalFilterData = [];
 let hasLoadedRelationalData = false;
 let searchTimeout;
@@ -311,13 +311,10 @@ async function loadSiswaUntukNilai() {
                 const tr = document.createElement('tr');
                 tr.dataset.nisn = siswa.NISN;
                 tr.dataset.nama = siswa.Nama;
-                tr.innerHTML = `
-                    <td data-label="NISN">${siswa.NISN}</td>
-                    <td data-label="Nama Siswa">${siswa.Nama}</td>
-                    <td data-label="Nilai"><input type="number" class="nilai-input" min="0" max="100" step="1" placeholder="0-100"></td>
-                `;
+                tr.innerHTML = `<td data-label="NISN">${siswa.NISN}</td><td data-label="Nama Siswa">${siswa.Nama}</td><td data-label="Nilai"><input type="number" class="nilai-input" min="0" max="100" step="1" placeholder="0-100"></td>`;
                 nilaiTableBody.appendChild(tr);
             });
+            checkExistingNilai(); // Check for existing grades right after loading students
         } else {
             nilaiTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Tidak ada siswa yang cocok dengan filter.</td></tr>';
         }
@@ -350,7 +347,8 @@ async function submitNilai() {
     if (nilaiSiswa.length === 0) {
         return showStatusMessage('Tidak ada nilai yang diisi. Harap masukkan setidaknya satu nilai siswa.', 'error');
     }
-    const dataUntukKirim = { detail: detailNilai, nilaiSiswa: nilaiSiswa };
+    const isUpdateMode = submitNilaiButton.dataset.mode === 'update';
+    const dataUntukKirim = { detail: detailNilai, nilaiSiswa: nilaiSiswa, isUpdate: isUpdateMode };
     showLoading(true);
     try {
         const response = await fetch(`${SCRIPT_URL}?action=submitNilai`, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(dataUntukKirim) });
@@ -361,7 +359,6 @@ async function submitNilai() {
             jenisNilaiInput.value = '';
             nilaiTableHead.innerHTML = '';
             nilaiTableBody.innerHTML = '';
-            // Refresh cache jenis nilai di latar belakang
             fetch(`${SCRIPT_URL}?action=getUniqueJenisNilai`).then(res => res.json()).then(result => {
                 if(result.status === 'success') cachedJenisNilai = result.data;
             });
@@ -397,6 +394,43 @@ function showJenisNilaiSuggestions() {
         jenisNilaiSaranEl.classList.remove('hidden');
     } else {
         jenisNilaiSaranEl.classList.add('hidden');
+    }
+}
+async function checkExistingNilai() {
+    const detailFilter = {
+        tahunAjaran: nilaiFilterTahunAjaranEl.value,
+        semester: nilaiFilterSemesterEl.value,
+        kelas: nilaiFilterKelasEl.value,
+        mapel: nilaiFilterMataPelajaranEl.value,
+        jenisNilai: jenisNilaiInput.value.trim()
+    };
+    submitNilaiButton.textContent = "Masukkan Nilai";
+    submitNilaiButton.dataset.mode = "insert";
+    submitNilaiButton.classList.remove('btn-accent');
+    submitNilaiButton.classList.add('btn-primary');
+    document.querySelectorAll('#nilaiTableBody .nilai-input').forEach(input => input.value = '');
+    if (!detailFilter.jenisNilai) return;
+    const params = new URLSearchParams({ action: 'getExistingNilai', ...detailFilter }).toString();
+    try {
+        const response = await fetch(`${SCRIPT_URL}?${params}`);
+        const result = await response.json();
+        if (result.status === 'success' && result.data.length > 0) {
+            showStatusMessage(`Data untuk "${detailFilter.jenisNilai}" ditemukan. Mode update aktif.`, 'info');
+            submitNilaiButton.textContent = "Update Nilai";
+            submitNilaiButton.dataset.mode = "update";
+            submitNilaiButton.classList.remove('btn-primary');
+            submitNilaiButton.classList.add('btn-accent');
+            const nilaiMap = new Map(result.data.map(item => [String(item.nisn), item.nilai]));
+            document.querySelectorAll('#nilaiTableBody tr').forEach(row => {
+                const nisn = row.dataset.nisn;
+                if (nilaiMap.has(nisn)) {
+                    const nilaiInput = row.querySelector('.nilai-input');
+                    nilaiInput.value = nilaiMap.get(nisn);
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Gagal mengecek nilai yang ada:", error);
     }
 }
 
@@ -456,7 +490,7 @@ function setupDashboardListeners() {
     loadSiswaUntukNilaiButton?.addEventListener('click', loadSiswaUntukNilai);
     submitNilaiButton?.addEventListener('click', submitNilai);
 
-    jenisNilaiInput?.addEventListener('keyup', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(showJenisNilaiSuggestions, 300); });
+    jenisNilaiInput?.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { showJenisNilaiSuggestions(); checkExistingNilai(); }, 400); });
     jenisNilaiInput?.addEventListener('blur', () => { setTimeout(() => jenisNilaiSaranEl.classList.add('hidden'), 200); });
 }
 
