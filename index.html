@@ -6,7 +6,7 @@
     <!-- ========================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Jurnal Online</title>
+    <title>Login - Jurnal Pelajaran Guru</title>
 
     <!-- ========================================================== -->
     <!-- STYLESHEETS & FONTS                                        -->
@@ -41,7 +41,7 @@
                     <path d="M7 12H17V14H7V12Z" fill="#4a90e2"/>
                     <path d="M7 16H13V18H7V16Z" fill="#4a90e2"/>
                 </svg>
-                <h3>Selamat Datang Kembali!</h3>
+                <h3>Selamat Datang Kembali Bu/Pak!</h3>
                 <p>Akses cepat dan mudah untuk mengelola jurnal pembelajaran Anda.</p>
             </div>
         </div>
@@ -50,7 +50,7 @@
         <div class="login-form-container">
             <div class="login-form-content">
                 
-                <h2 class="logo">Jurnal Online</h2>
+                <h2 class="logo">Jurnal Bu/Pak</h2>
                 <p style="color: var(--text-light); margin-bottom: 25px;">Silakan masuk untuk melanjutkan.</p>
                 
                 <form onsubmit="event.preventDefault(); document.getElementById('loginButton').click();">
@@ -60,7 +60,6 @@
                         <input type="text" id="username" placeholder="Masukkan username Anda" required autocomplete="username">
                     </div>
                     
-                    <!-- [DIPERBAIKI] Bagian Password ditambahkan wrapper dan ikon -->
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div class="password-wrapper">
@@ -88,12 +87,11 @@
     </div>
 
     <!-- ========================================================== -->
-    <!-- JAVASCRIPT LIBRARIES & SCRIPT                              -->
+    <!-- JAVASCRIPT & SCRIPT APLIKASI                               -->
     <!-- Ditempatkan di akhir body untuk rendering halaman yg lebih cepat -->
     <!-- ========================================================== -->
 
-    <!-- [CATATAN] Library ini tidak lagi diperlukan jika Anda sudah beralih ke hashing di sisi server -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <!-- [DIHAPUS] Library CryptoJS tidak lagi diperlukan karena hashing dipindah ke server. -->
     
     <!-- Script utama aplikasi -->
     <script src="app.js"></script>
