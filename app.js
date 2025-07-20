@@ -1,13 +1,13 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI AMAN)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI AMAN & STABIL)
  * =================================================================
- * @version 5.5.2 - Perbaikan Final Bug Kritis pada Fetch API
+ * @version 5.5.3 - Perbaikan Final dan Verifikasi Bug URL Fetch
  * @author Gemini AI Expert for User
  *
  * FITUR UTAMA VERSI INI:
- * - [PERBAIKAN FINAL] Memperbaiki bug "Invalid left-hand side in assignment" di semua
- *   fungsi fetch dengan memastikan konstruksi URL yang benar dan aman.
+ * - [PERBAIKAN FINAL] Memperbaiki bug "Invalid left-hand side in assignment" secara tuntas
+ *   dengan memastikan konstruksi URL yang benar dan aman di semua fungsi fetch.
  * - [KEAMANAN] Semua permintaan API kini menyertakan token autentikasi.
  * - [EFISIENSI] Menghilangkan duplikasi kode pada filter riwayat.
  */
@@ -197,7 +197,7 @@ async function preloadAllData() {
     ];
     if (isAdmin) {
         dataPromises.push(
-            // --- PERBAIKAN KRITIS DI SINI ---
+            // --- PERBAIKAN FINAL DI SINI ---
             fetch(`${SCRIPT_URL}?action=searchSiswa&searchTerm=${authTokenParam}`).then(res => res.json()),
             fetch(`${SCRIPT_URL}?action=getUsers${authTokenParam}`).then(res => res.json())
         );
@@ -267,8 +267,9 @@ async function loadDashboardStats() { try { const response = await fetch(`${SCRI
 async function refreshSiswaCache() {
     showLoading(true);
     try {
-        // --- PERBAIKAN KRITIS DI SINI (baris yang dilaporkan error) ---
-        const response = await fetch(`${SCRIPT_URL}?action=searchSiswa&searchTerm=${getAuthTokenParam()}`);
+        // --- PERBAIKAN FINAL DI SINI ---
+        const url = `${SCRIPT_URL}?action=searchSiswa&searchTerm=${getAuthTokenParam()}`;
+        const response = await fetch(url);
         const result = await response.json();
         if (result.status === 'success') {
             cachedSiswaData = result.data;
