@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Jurnal Pelajaran Digital Guru</title>
+    <title>Dashboard - Jurnal Pelajaran Bu/Pak</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 
 <body>
     <header>
-        <div class="logo">Jurnal Online</div>
+        <div class="logo">Jurnal Pelajaran Bu/Pak</div>
         <nav>
             <span id="welcomeMessage" style="margin-right: 20px; color: var(--text-light);">Memuat...</span>
             <button id="logoutButton" class="btn btn-danger">Logout</button>
@@ -77,7 +77,6 @@
         <div id="riwayatSection" class="content-section" style="display: none;">
             <div class="card">
                 <div class="card-header">Riwayat Jurnal Pembelajaran</div>
-                <!-- [DIPERBAIKI] Atribut 'disabled' ditambahkan untuk filter bertingkat riwayat -->
                 <div id="riwayatFilterForm" class="form-grid">
                     <div class="form-group"><label for="riwayatFilterTahunAjaran">Tahun Ajaran</label><select id="riwayatFilterTahunAjaran"></select></div>
                     <div class="form-group"><label for="riwayatFilterSemester">Semester</label><select id="riwayatFilterSemester" disabled></select></div>
@@ -85,7 +84,15 @@
                     <div class="form-group"><label for="riwayatFilterMapel">Mata Pelajaran</label><select id="riwayatFilterMapel" disabled></select></div>
                     <div class="form-group"><label for="riwayatFilterTanggalMulai">Dari Tanggal</label><input type="date" id="riwayatFilterTanggalMulai"></div>
                     <div class="form-group"><label for="riwayatFilterTanggalSelesai">Sampai Tanggal</label><input type="date" id="riwayatFilterTanggalSelesai"></div>
-                    <div class="form-group form-group-full"><button type="button" id="filterRiwayatButton" class="btn btn-primary">Terapkan Filter</button><button type="button" id="exportRiwayatButton" class="btn btn-success" style="margin-left: 10px; display: none;">Export ke Excel</button></div>
+                    <div class="form-group form-group-full">
+                        <button type="button" id="filterRiwayatButton" class="btn btn-primary">Terapkan Filter</button>
+                        <!-- [DITAMBAHKAN] Tombol untuk refresh data dari server -->
+                        <button type="button" id="refreshRiwayatButton" class="btn btn-secondary" style="margin-left: 10px;" title="Muat ulang data riwayat dari server">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: middle; margin-right: 5px;"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+                            Refresh
+                        </button>
+                        <button type="button" id="exportRiwayatButton" class="btn btn-success" style="margin-left: 10px; display: none;">Export ke Excel</button>
+                    </div>
                 </div>
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
                 <h4>Hasil Pencarian Riwayat</h4>
@@ -104,7 +111,6 @@
         <div id="siswaSection" class="content-section" style="display: none;">
             <div class="card">
                 <div class="card-header">Manajemen Database Siswa</div>
-                <!-- [DIPERBAIKI] Atribut 'name' disesuaikan dengan backend -->
                 <form id="formSiswa" class="form-container">
                     <input type="hidden" id="formNisnOld">
                     <div class="form-group"><label for="formNisn">NISN</label><input type="number" id="formNisn" name="NISN" placeholder="NISN Siswa" required></div>
@@ -119,7 +125,11 @@
                 <h4>Daftar Siswa</h4>
                 <div class="form-grid">
                     <div class="form-group"><label for="nisnSearchInput">Cari Siswa (NISN/Nama)</label><input type="text" id="nisnSearchInput" placeholder="Ketik untuk mencari..."></div>
-                    <div class="form-group" style="align-self: end;"><button type="button" id="searchButton" class="btn btn-secondary">Cari</button><button type="button" id="exportSiswaExcel" class="btn btn-success" style="margin-left: 10px;">Export</button></div>
+                    <div class="form-group" style="align-self: end;">
+                        <!-- [DIPERBARUI] Tombol Cari dihapus, diganti dengan Refresh -->
+                        <button type="button" id="refreshSiswaButton" class="btn btn-secondary" title="Muat ulang data siswa dari server">Refresh Data</button>
+                        <button type="button" id="exportSiswaExcel" class="btn btn-success" style="margin-left: 10px;">Export</button>
+                    </div>
                 </div>
                 <div class="table-container">
                     <table>
@@ -145,7 +155,13 @@
                     <div class="form-actions"><button type="submit" id="savePenggunaButton" class="btn btn-accent">Simpan Pengguna</button><button type="button" id="resetPenggunaButton" class="btn btn-secondary">Batal</button></div>
                 </form>
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
-                <h4>Daftar Pengguna Sistem</h4>
+                
+                <!-- [DIPERBARUI] Header tabel dengan tombol refresh -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4>Daftar Pengguna Sistem</h4>
+                    <button type="button" id="refreshPenggunaButton" class="btn btn-secondary btn-sm" title="Muat ulang data pengguna dari server">Refresh Data</button>
+                </div>
+                
                 <div class="table-container">
                     <table>
                         <thead><tr><th>Nama Lengkap</th><th>Username</th><th>Peran</th><th>Aksi</th></tr></thead>
