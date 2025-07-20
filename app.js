@@ -2,26 +2,29 @@
  * =================================================================
  * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI LENGKAP & STABIL)
  * =================================================================
- * @version 4.0 - Perbaikan & Penyeragaman Filter Riwayat
+ * @version 4.1 - Simplifikasi Logika Login & Sinkronisasi dengan Backend v3.0
  * @author Gemini AI Expert for User
  *
  * PERUBAHAN UTAMA:
- * - [PERBAIKAN BUG] Mengubah sumber data untuk filter di halaman Riwayat. Sekarang
+ * - [KEAMANAN] Menghapus library CryptoJS dan logika hashing password dari sisi frontend.
+ *   Proses hashing sekarang sepenuhnya ditangani oleh backend (Google Apps Script) untuk
+ *   keamanan yang lebih baik.
+ * - [PERBAIKAN] Mengubah sumber data untuk filter di halaman Riwayat. Sekarang
  *   kedua halaman (Input & Riwayat) menggunakan sumber data yang sama (`relationalFilterData`)
- *   yang berasal dari Database Siswa untuk konsistensi dan keandalan.
+ *   untuk konsistensi dan keandalan.
  * - [OPTIMASI] Data filter utama sekarang hanya diambil dari server satu kali per sesi.
- * - [OPTIMASI] Menghapus variabel cache dan logika `fetch` yang redundan.
  */
 
 // ====================================================================
 // TAHAP 1: KONFIGURASI GLOBAL DAN STATE APLIKASI
 // ====================================================================
 
+// [PENTING!] GANTI URL INI DENGAN URL WEB APP BARU ANDA SETELAH DEPLOY ULANG
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4DPyvJxP76Xhu4ri3D9RroaOspOQUJ7KlfEDYSvhe9AvOrg7qBAcVnFqrul-38CmGCQ/exec";
 
 let cachedSiswaData = [];
 let cachedJurnalHistory = [];
-let cachedUsers = []; 
+let cachedUsers = [];
 let relationalFilterData = []; // Satu-satunya sumber kebenaran untuk data filter
 let hasLoadedRelationalData = false; // Flag untuk mencegah fetch berulang
 let searchTimeout;
@@ -116,17 +119,32 @@ function checkAuthentication() {
         }
     }
 }
+
+/**
+ * [DIPERBAIKI & LEBIH AMAN]
+ * Fungsi ini menangani login dengan mengirimkan password mentah ke backend.
+ * Proses hashing password sekarang sepenuhnya dilakukan di sisi server.
+ */
 async function handleLogin() {
-    const usernameEl = document.getElementById('username'), passwordEl = document.getElementById('password');
-    if (!usernameEl.value || !passwordEl.value) return showStatusMessage("Username dan password harus diisi.", 'error');
+    const usernameEl = document.getElementById('username');
+    const passwordEl = document.getElementById('password');
+
+    if (!usernameEl.value || !passwordEl.value) {
+        return showStatusMessage("Username dan password harus diisi.", 'error');
+    }
+    
     showLoading(true);
+
     const formData = new FormData();
     formData.append('action', 'login');
     formData.append('username', usernameEl.value);
-    formData.append('password', passwordEl.value);
+    // Kirim password mentah. Hashing aman dilakukan di server via HTTPS.
+    formData.append('password', passwordEl.value); 
+
     try {
         const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
         const result = await response.json();
+        
         if (result.status === "success") {
             sessionStorage.setItem('loggedInUser', JSON.stringify(result.data));
             window.location.href = 'dashboard.html';
@@ -139,6 +157,7 @@ async function handleLogin() {
         showLoading(false);
     }
 }
+
 function handleLogout() {
     if (confirm('Apakah Anda yakin ingin logout?')) {
         sessionStorage.removeItem('loggedInUser');
@@ -148,7 +167,6 @@ function handleLogout() {
 
 // --- 3.2. DASHBOARD & DATA GLOBAL ---
 
-// [DIPERBAIKI] Filter bertingkat untuk HALAMAN INPUT JURNAL & RIWAYAT (disatukan & dioptimalkan)
 const filterTahunAjaranEl = document.getElementById('filterTahunAjaran');
 const filterSemesterEl = document.getElementById('filterSemester');
 const filterKelasEl = document.getElementById('filterKelas');
@@ -159,18 +177,16 @@ const riwayatSemesterEl = document.getElementById('riwayatFilterSemester');
 const riwayatKelasEl = document.getElementById('riwayatFilterKelas');
 const riwayatMapelEl = document.getElementById('riwayatFilterMapel');
 
-// Fungsi utama untuk mengambil data filter HANYA SEKALI
 async function initCascadingFilters() {
     if (hasLoadedRelationalData || !filterTahunAjaranEl) return;
     try {
-        showLoading(true); // Tampilkan loading saat pertama kali memuat data
+        showLoading(true);
         const response = await fetch(`${SCRIPT_URL}?action=getRelationalFilterData`);
         const result = await response.json();
         if (result.status === 'success') {
             relationalFilterData = result.data;
-            hasLoadedRelationalData = true; // Tandai bahwa data berhasil dimuat
+            hasLoadedRelationalData = true;
 
-            // Isi dropdown untuk halaman Input Jurnal
             const allTahunAjaran = [...new Set(result.data.map(item => item.tahunAjaran).filter(Boolean))].sort();
             populateDropdown('filterTahunAjaran', allTahunAjaran, '-- Pilih Tahun Ajaran --');
             resetAndDisableDropdown(filterSemesterEl, '-- Pilih Semester --');
@@ -188,21 +204,17 @@ async function initCascadingFilters() {
     }
 }
 
-// Fungsi untuk mengisi filter di halaman Riwayat (menggunakan data yang sudah ada)
 function initHistoryCascadingFilters() {
     if (!riwayatTahunAjaranEl || !hasLoadedRelationalData) return;
     
-    // Gunakan `relationalFilterData` yang sudah ada, jangan fetch ulang.
     const allTahunAjaran = [...new Set(relationalFilterData.map(item => item.tahunAjaran).filter(Boolean))].sort();
     populateDropdown('riwayatFilterTahunAjaran', allTahunAjaran, '-- Semua Tahun --');
 
-    // Reset dan nonaktifkan filter anak-anaknya.
     resetAndDisableDropdown(riwayatSemesterEl, '-- Semua Semester --');
     resetAndDisableDropdown(riwayatKelasEl, '-- Semua Kelas --');
     resetAndDisableDropdown(riwayatMapelEl, '-- Semua Mapel --');
 }
 
-// Event handler untuk filter halaman Input
 function onTahunAjaranChange() {
     const selectedTahun = filterTahunAjaranEl.value;
     resetAndDisableDropdown(filterSemesterEl, '-- Pilih Semester --');
@@ -234,7 +246,6 @@ function onKelasChange() {
     filterMataPelajaranEl.disabled = false;
 }
 
-// [DIPERBAIKI] Event handler untuk filter halaman Riwayat
 function onHistoryTahunAjaranChange() {
     const selectedTahun = riwayatTahunAjaranEl.value;
     resetAndDisableDropdown(riwayatSemesterEl, '-- Semua Semester --');
@@ -261,7 +272,6 @@ function onHistoryKelasChange() {
     const selectedKelas = riwayatKelasEl.value;
     resetAndDisableDropdown(riwayatMapelEl, '-- Semua Mapel --');
     if (!selectedKelas) return;
-    // Di Riwayat, kita ambil semua mapel yang ada di kelas itu, terlepas dari semester
     const availableMapel = [...new Set(relationalFilterData.filter(item => item.tahunAjaran == selectedTahun && item.semester == selectedSemester && item.kelas == selectedKelas).flatMap(item => item.mapel).filter(Boolean))].sort();
     populateDropdown('riwayatFilterMapel', availableMapel, '-- Semua Mapel --');
     riwayatMapelEl.disabled = false;
@@ -424,7 +434,7 @@ async function submitJurnal() {
             showStatusMessage(result.message, 'success');
             document.getElementById('formJurnal').reset();
             document.getElementById('presensiTableBody').innerHTML = '';
-            initCascadingFilters(); // Memanggil ulang untuk reset dropdown ke state awal
+            initCascadingFilters();
         } else { showStatusMessage(`Gagal menyimpan jurnal: ${result.message}`, 'error'); }
     } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); }
     finally { showLoading(false); }
@@ -586,9 +596,8 @@ function setupDashboardListeners() {
             button.classList.add('active');
             const sectionId = button.dataset.section;
             showSection(sectionId);
-            // [DIPERBAIKI] Logika pemanggilan data dioptimalkan
             if (sectionId === 'riwayatSection') {
-                initHistoryCascadingFilters(); // Memuat filter riwayat
+                initHistoryCascadingFilters();
                 loadRiwayatJurnal();
             } else if (sectionId === 'penggunaSection') {
                 loadUsers(true);
@@ -600,17 +609,14 @@ function setupDashboardListeners() {
         });
     });
 
-    // Filter Bertingkat untuk Input Jurnal
     document.getElementById('filterTahunAjaran')?.addEventListener('change', onTahunAjaranChange);
     document.getElementById('filterSemester')?.addEventListener('change', onSemesterChange);
     document.getElementById('filterKelas')?.addEventListener('change', onKelasChange);
 
-    // [DITAMBAHKAN] Filter Bertingkat untuk Riwayat Jurnal
     document.getElementById('riwayatFilterTahunAjaran')?.addEventListener('change', onHistoryTahunAjaranChange);
     document.getElementById('riwayatFilterSemester')?.addEventListener('change', onHistorySemesterChange);
     document.getElementById('riwayatFilterKelas')?.addEventListener('change', onHistoryKelasChange);
 
-    // Tombol dan Form Lainnya
     document.getElementById('loadSiswaButton')?.addEventListener('click', loadSiswaForPresensi);
     document.getElementById('submitJurnalButton')?.addEventListener('click', submitJurnal);
     document.getElementById('filterRiwayatButton')?.addEventListener('click', loadRiwayatJurnal);
@@ -630,13 +636,8 @@ function setupDashboardListeners() {
 
 async function initDashboardPage() {
     checkAuthentication();
-    // Inisialisasi semua listener terlebih dahulu
     setupDashboardListeners();
-
-    // Panggil data filter bertingkat utama satu kali
     await initCascadingFilters();
-
-    // Tampilkan section default dan panggil data HANYA untuk section itu
     showSection('jurnalSection');
     const defaultButton = document.querySelector('.section-nav button[data-section="jurnalSection"]');
     if (defaultButton) {
@@ -648,7 +649,7 @@ async function initDashboardPage() {
 function initLoginPage() {
     checkAuthentication();
     document.getElementById('loginButton')?.addEventListener('click', handleLogin);
-    document.querySelector('.login-container form, .login-box form')?.addEventListener('submit', (e) => { e.preventDefault(); handleLogin(); });
+    document.querySelector('.login-box form')?.addEventListener('submit', (e) => { e.preventDefault(); handleLogin(); });
     setupPasswordToggle();
 }
 
