@@ -22,7 +22,6 @@
 
     <nav class="section-nav">
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
-        <!-- [DITAMBAHKAN] Tombol navigasi baru untuk Input Nilai -->
         <button data-section="nilaiSection" class="btn btn-nav">Input Nilai</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
         <button data-section="siswaSection" class="btn btn-nav">Manajemen Siswa</button>
@@ -74,7 +73,7 @@
         </div>
         
         <!-- ====================================================== -->
-        <!-- Bagian BARU: INPUT NILAI                               -->
+        <!-- Bagian 2: INPUT NILAI                                  -->
         <!-- ====================================================== -->
         <div id="nilaiSection" class="content-section" style="display: none;">
             <div class="card">
@@ -96,7 +95,9 @@
                 <div id="areaInputNilai" class="hidden">
                     <div class="form-group">
                         <label for="jenisNilai">Jenis Penilaian (Contoh: Ulangan Harian 1, Tugas 2, PTS, PAS)</label>
-                        <input type="text" id="jenisNilai" placeholder="Ketik jenis penilaian di sini..." required>
+                        <input type="text" id="jenisNilai" placeholder="Ketik jenis penilaian di sini..." required autocomplete="off">
+                        <!-- [DITAMBAHKAN] Wadah untuk menampilkan saran/autocomplete -->
+                        <div id="jenisNilaiSaran" class="rekomendasi-container hidden"></div>
                     </div>
 
                     <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Daftar Nilai Siswa</h4>
@@ -121,7 +122,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 2: RIWAYAT JURNAL                               -->
+        <!-- Bagian 3: RIWAYAT JURNAL                               -->
         <!-- ====================================================== -->
         <div id="riwayatSection" class="content-section" style="display: none;">
             <div class="card">
@@ -158,7 +159,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 3: MANAJEMEN SISWA                              -->
+        <!-- Bagian 4: MANAJEMEN SISWA                              -->
         <!-- ====================================================== -->
         <div id="siswaSection" class="content-section" style="display: none;">
             <div class="card">
@@ -192,7 +193,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 4: MANAJEMEN PENGGUNA                           -->
+        <!-- Bagian 5: MANAJEMEN PENGGUNA                           -->
         <!-- ====================================================== -->
         <div id="penggunaSection" class="content-section" style="display: none;">
             <div class="card">
