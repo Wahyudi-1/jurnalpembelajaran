@@ -2,14 +2,14 @@
  * =================================================================
  * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN PERBAIKAN UI)
  * =================================================================
- * @version 5.7 - Perbaikan State Loading Spinner Rekap Nilai
+ * @version 5.7 - Perbaikan State Loading Spinner & Pesan Status Rekap Nilai
  * @author Gemini AI Expert for User
  *
  * FITUR UTAMA VERSI INI:
  * - [PERBAIKAN] Memastikan loading spinner pada halaman Rekap Nilai hanya muncul
- *   selama proses fetch data dan hilang setelahnya.
- * - [OPTIMASI] Halaman Rekap Nilai sekarang menggunakan cache.
- * - [FITUR] Menambahkan tombol Refresh di halaman Rekap Nilai.
+ *   selama proses fetch data dan dijamin hilang setelahnya.
+ * - [UX] Menambahkan pesan status yang lebih jelas saat menampilkan data rekap
+ *   (dari cache, berhasil dimuat, atau tidak ditemukan).
  */
 
 // ====================================================================
@@ -411,6 +411,11 @@ async function tampilkanRekapNilai() {
         if (result.status === 'success') {
             cachedRekapNilai[cacheKey] = result.data;
             renderRekapTabel(result.data.rekapData, result.data.headers);
+            if (result.data.rekapData.length > 0) {
+                showStatusMessage('Rekapitulasi berhasil dimuat dari server.', 'success');
+            } else {
+                showStatusMessage('Tidak ada data nilai yang ditemukan untuk filter ini.', 'info');
+            }
         } else {
             showStatusMessage(`Gagal memuat rekap: ${result.message}`, 'error');
         }
