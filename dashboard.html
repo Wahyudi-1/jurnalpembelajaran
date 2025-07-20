@@ -22,6 +22,8 @@
 
     <nav class="section-nav">
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
+        <!-- [DITAMBAHKAN] Tombol navigasi baru untuk Input Nilai -->
+        <button data-section="nilaiSection" class="btn btn-nav">Input Nilai</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
         <button data-section="siswaSection" class="btn btn-nav">Manajemen Siswa</button>
         <button data-section="penggunaSection" class="btn btn-nav">Manajemen Pengguna</button>
@@ -70,6 +72,53 @@
                 </form>
             </div>
         </div>
+        
+        <!-- ====================================================== -->
+        <!-- Bagian BARU: INPUT NILAI                               -->
+        <!-- ====================================================== -->
+        <div id="nilaiSection" class="content-section" style="display: none;">
+            <div class="card">
+                <div class="card-header">Input Nilai Siswa</div>
+                
+                <div class="form-grid">
+                    <div class="form-group"><label for="nilaiFilterTahunAjaran">Tahun Ajaran</label><select id="nilaiFilterTahunAjaran" required></select></div>
+                    <div class="form-group"><label for="nilaiFilterSemester">Semester</label><select id="nilaiFilterSemester" required disabled></select></div>
+                    <div class="form-group"><label for="nilaiFilterKelas">Kelas</label><select id="nilaiFilterKelas" required disabled></select></div>
+                    <div class="form-group form-group-full"><label for="nilaiFilterMataPelajaran">Mata Pelajaran</label><select id="nilaiFilterMataPelajaran" required disabled></select></div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <button type="button" id="loadSiswaUntukNilaiButton" class="btn btn-secondary btn-block">Tampilkan Siswa untuk Penilaian</button>
+                </div>
+
+                <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+
+                <div id="areaInputNilai" class="hidden">
+                    <div class="form-group">
+                        <label for="jenisNilai">Jenis Penilaian (Contoh: Ulangan Harian 1, Tugas 2, PTS, PAS)</label>
+                        <input type="text" id="jenisNilai" placeholder="Ketik jenis penilaian di sini..." required>
+                    </div>
+
+                    <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Daftar Nilai Siswa</h4>
+                    <div class="table-container">
+                        <form id="formNilai">
+                            <table>
+                                <thead id="nilaiTableHead">
+                                    <!-- Header tabel akan dibuat dinamis oleh JavaScript -->
+                                </thead>
+                                <tbody id="nilaiTableBody">
+                                    <!-- Baris tabel akan dibuat dinamis oleh JavaScript -->
+                                </tbody>
+                            </table>
+                            <div class="form-group" style="margin-top: 2rem;">
+                                <button type="button" id="submitNilaiButton" class="btn btn-primary btn-block">Masukkan Nilai</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
         <!-- ====================================================== -->
         <!-- Bagian 2: RIWAYAT JURNAL                               -->
@@ -99,7 +148,6 @@
                     <table>
                         <thead><tr><th>Tanggal</th><th>Kelas</th><th>Semester</th><th>Mata Pelajaran</th><th>Materi</th><th>Kehadiran</th><th>Aksi</th></tr></thead>
                         <tbody id="riwayatTableBody">
-                            <!-- [DIPERBARUI] Pesan default saat halaman pertama kali dibuka -->
                             <tr>
                                 <td colspan="7" style="text-align: center;">Gunakan filter di atas untuk menampilkan riwayat.</td>
                             </tr>
