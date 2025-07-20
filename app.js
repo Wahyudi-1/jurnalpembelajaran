@@ -1,15 +1,15 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN CACHING REKAP)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN PERBAIKAN UI)
  * =================================================================
- * @version 5.6 - Peningkatan Fungsionalitas Rekap Nilai dengan Caching
+ * @version 5.7 - Perbaikan State Loading Spinner Rekap Nilai
  * @author Gemini AI Expert for User
  *
  * FITUR UTAMA VERSI INI:
- * - [OPTIMASI] Halaman Rekap Nilai sekarang menggunakan cache. Fetch ke server hanya terjadi
- *   jika kombinasi filter belum pernah diminta sebelumnya.
- * - [FITUR] Menambahkan tombol Refresh di halaman Rekap Nilai untuk memaksa pembaruan data.
- * - [UX] Pengalaman pengguna menjadi jauh lebih cepat saat menerapkan filter yang sama berulang kali.
+ * - [PERBAIKAN] Memastikan loading spinner pada halaman Rekap Nilai hanya muncul
+ *   selama proses fetch data dan hilang setelahnya.
+ * - [OPTIMASI] Halaman Rekap Nilai sekarang menggunakan cache.
+ * - [FITUR] Menambahkan tombol Refresh di halaman Rekap Nilai.
  */
 
 // ====================================================================
@@ -22,7 +22,7 @@ let cachedSiswaData = [];
 let cachedJurnalHistory = [];
 let cachedUsers = [];
 let cachedJenisNilai = [];
-let cachedRekapNilai = {}; // Cache untuk hasil rekapitulasi
+let cachedRekapNilai = {};
 let relationalFilterData = [];
 let hasLoadedRelationalData = false;
 let searchTimeout;
@@ -466,6 +466,7 @@ async function refreshRekapNilai() {
     await tampilkanRekapNilai();
     showStatusMessage('Data rekap berhasil diperbarui dari server.', 'success');
 }
+
 
 // ====================================================================
 // TAHAP 4: INISIALISASI DAN EVENT LISTENERS
