@@ -5,7 +5,7 @@
  * @version 5.1 - Optimasi Caching dan Tampilan Awal Riwayat
  * @author Gemini AI Expert for User
  *
- * PERUBAHAN UTAMA:
+ * FITUR UTAMA VERSI INI:
  * - [OPTIMASI] Data utama (riwayat, siswa, pengguna) dimuat sekali setelah login.
  *   Navigasi antar menu menjadi instan tanpa loading spinner.
  * - [UX] Halaman Riwayat Jurnal tidak akan menampilkan data apapun secara default.
@@ -272,6 +272,7 @@ async function refreshRiwayatCache() {
         if (result.status === 'success') {
             cachedJurnalHistory = result.data;
             showStatusMessage('Riwayat jurnal berhasil diperbarui.', 'success');
+            applyRiwayatFilter(); // Terapkan kembali filter yang ada dengan data baru
         } else { showStatusMessage('Gagal memperbarui riwayat jurnal.', 'error'); }
     } catch (error) { showStatusMessage('Kesalahan jaringan saat memperbarui riwayat.', 'error'); } finally { showLoading(false); }
 }
@@ -335,15 +336,14 @@ function setupDashboardListeners() {
             showSection(sectionId);
             if (sectionId === 'riwayatSection') {
                 initHistoryCascadingFilters();
-                // Kosongkan tabel riwayat saat pertama kali dibuka
                 document.getElementById('riwayatTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center;">Gunakan filter di atas untuk menampilkan riwayat.</td></tr>';
                 document.getElementById('exportRiwayatButton').style.display = 'none';
             } else if (sectionId === 'penggunaSection') {
-                loadUsers(false); // Render dari cache
+                loadUsers(false);
             } else if (sectionId === 'jurnalSection') {
                 loadDashboardStats();
             } else if (sectionId === 'siswaSection') {
-                searchSiswa(false); // Render dari cache
+                searchSiswa(false);
             }
         });
     });
@@ -377,7 +377,6 @@ async function initDashboardPage() {
     const defaultButton = document.querySelector('.section-nav button[data-section="jurnalSection"]');
     if (defaultButton) defaultButton.classList.add('active');
     
-    // Muat semua data penting di latar belakang
     await Promise.all([
         initCascadingFilters(),
         loadDashboardStats(),
