@@ -1,15 +1,15 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN SAVE SISWA CERDAS)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN UX IMPROVEMENT)
  * =================================================================
- * @version 5.5 - Refactor Logika Simpan Siswa
+ * @version 5.6 - Peningkatan UX pada Form Siswa
  * @author Gemini AI Expert for User
  *
  * FITUR UTAMA VERSI INI:
- * - [REFACTOR] Menyederhanakan fungsi `saveSiswa()` di frontend.
- * - [REFACTOR] Menghapus logika `oldNisn` dan input tersembunyi karena
- *   backend sekarang cukup pintar untuk menangani penambahan vs. pembaruan data.
- * - [OPTIMASI] Membersihkan kode terkait manajemen siswa di frontend.
+ * - [FITUR] Nama siswa di form Manajemen Siswa akan terisi otomatis setelah NISN diinput
+ *   jika NISN tersebut sudah ada di database (cache).
+ * - [FITUR] Event listener baru ditambahkan untuk mendukung fitur autofill.
+ * - Kode ini disiapkan untuk bekerja dengan HTML yang sudah diubah (input semester menjadi dropdown).
  */
 
 // ====================================================================
@@ -43,73 +43,13 @@ const submitNilaiButton = document.getElementById('submitNilaiButton');
 // ====================================================================
 // TAHAP 2: FUNGSI-FUNGSI PEMBANTU (HELPERS)
 // ====================================================================
-
-function showLoading(isLoading) {
-    const loader = document.getElementById('loadingIndicator');
-    if (loader) loader.style.display = isLoading ? 'flex' : 'none';
-}
-
-function showStatusMessage(message, type = 'info', duration = 5000) {
-    const statusEl = document.getElementById('statusMessage');
-    if (statusEl) {
-        statusEl.textContent = message;
-        statusEl.className = `status-message ${type}`;
-        statusEl.style.display = 'block';
-        window.scrollTo(0, 0);
-        if (duration > 0) {
-           setTimeout(() => { statusEl.style.display = 'none'; }, duration);
-        }
-    } else {
-        alert(message);
-    }
-}
-
-function populateDropdown(elementId, options, defaultOptionText = '-- Pilih --') {
-    const select = document.getElementById(elementId);
-    if (select) {
-        const currentValue = select.value;
-        select.innerHTML = `<option value="">${defaultOptionText}</option>`;
-        options.forEach(option => {
-            if (option) select.innerHTML += `<option value="${option}">${option}</option>`;
-        });
-        select.value = currentValue;
-    }
-}
-
-function showSection(sectionId) {
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.style.display = 'none';
-    });
-    const activeSection = document.getElementById(sectionId);
-    if (activeSection) {
-        activeSection.style.display = 'block';
-    }
-}
-
-function setupPasswordToggle() {
-    const toggleIcon = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    if (!toggleIcon || !passwordInput) return;
-    const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
-    const eyeSlashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.243 4.243l-4.243-4.243" /></svg>`;
-    toggleIcon.innerHTML = eyeIcon;
-    toggleIcon.addEventListener('click', () => {
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.innerHTML = eyeSlashIcon;
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.innerHTML = eyeIcon;
-        }
-    });
-}
-
-function resetAndDisableDropdown(selectElement, defaultText) {
-    if (selectElement) {
-        selectElement.innerHTML = `<option value="">${defaultText}</option>`;
-        selectElement.disabled = true;
-    }
-}
+// (Tidak ada perubahan di bagian ini)
+function showLoading(isLoading) { const loader = document.getElementById('loadingIndicator'); if (loader) loader.style.display = isLoading ? 'flex' : 'none'; }
+function showStatusMessage(message, type = 'info', duration = 5000) { const statusEl = document.getElementById('statusMessage'); if (statusEl) { statusEl.textContent = message; statusEl.className = `status-message ${type}`; statusEl.style.display = 'block'; window.scrollTo(0, 0); if (duration > 0) { setTimeout(() => { statusEl.style.display = 'none'; }, duration); } } else { alert(message); } }
+function populateDropdown(elementId, options, defaultOptionText = '-- Pilih --') { const select = document.getElementById(elementId); if (select) { const currentValue = select.value; select.innerHTML = `<option value="">${defaultOptionText}</option>`; options.forEach(option => { if (option) select.innerHTML += `<option value="${option}">${option}</option>`; }); select.value = currentValue; } }
+function showSection(sectionId) { document.querySelectorAll('.content-section').forEach(section => { section.style.display = 'none'; }); const activeSection = document.getElementById(sectionId); if (activeSection) { activeSection.style.display = 'block'; } }
+function setupPasswordToggle() { const toggleIcon = document.getElementById('togglePassword'); const passwordInput = document.getElementById('password'); if (!toggleIcon || !passwordInput) return; const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`; const eyeSlashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.243 4.243l-4.243-4.243" /></svg>`; toggleIcon.innerHTML = eyeIcon; toggleIcon.addEventListener('click', () => { if (passwordInput.type === 'password') { passwordInput.type = 'text'; toggleIcon.innerHTML = eyeSlashIcon; } else { passwordInput.type = 'password'; toggleIcon.innerHTML = eyeIcon; } }); }
+function resetAndDisableDropdown(selectElement, defaultText) { if (selectElement) { selectElement.innerHTML = `<option value="">${defaultText}</option>`; selectElement.disabled = true; } }
 
 // ====================================================================
 // TAHAP 3: FUNGSI-FUNGSI UTAMA
@@ -117,58 +57,9 @@ function resetAndDisableDropdown(selectElement, defaultText) {
 
 // --- 3.1. OTENTIKASI & SESI ---
 // (Tidak ada perubahan di bagian ini)
-function checkAuthentication() {
-    const user = sessionStorage.getItem('loggedInUser');
-    if (!user) {
-        if (window.location.pathname.includes('dashboard.html')) {
-            window.location.href = 'index.html';
-        }
-    } else {
-        const userData = JSON.parse(user);
-        const welcomeEl = document.getElementById('welcomeMessage');
-        if (welcomeEl) welcomeEl.textContent = `Selamat Datang, ${userData.nama}!`;
-        if (userData.peran && userData.peran.toLowerCase() !== 'admin') {
-            const btnPengguna = document.querySelector('button[data-section="penggunaSection"]');
-            const btnSiswa = document.querySelector('button[data-section="siswaSection"]');
-            if (btnPengguna) btnPengguna.style.display = 'none';
-            if (btnSiswa) btnSiswa.style.display = 'none';
-        }
-    }
-}
-
-async function handleLogin() {
-    const usernameEl = document.getElementById('username');
-    const passwordEl = document.getElementById('password');
-    if (!usernameEl.value || !passwordEl.value) {
-        return showStatusMessage("Username dan password harus diisi.", 'error');
-    }
-    showLoading(true);
-    const formData = new FormData();
-    formData.append('action', 'login');
-    formData.append('username', usernameEl.value);
-    formData.append('password', passwordEl.value);
-    try {
-        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
-        const result = await response.json();
-        if (result.status === "success") {
-            sessionStorage.setItem('loggedInUser', JSON.stringify(result.data));
-            window.location.href = 'dashboard.html';
-        } else {
-            showStatusMessage(result.message, 'error');
-        }
-    } catch (error) {
-        showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error');
-    } finally {
-        showLoading(false);
-    }
-}
-
-function handleLogout() {
-    if (confirm('Apakah Anda yakin ingin logout?')) {
-        sessionStorage.removeItem('loggedInUser');
-        window.location.href = 'index.html';
-    }
-}
+function checkAuthentication() { const user = sessionStorage.getItem('loggedInUser'); if (!user) { if (window.location.pathname.includes('dashboard.html')) { window.location.href = 'index.html'; } } else { const userData = JSON.parse(user); const welcomeEl = document.getElementById('welcomeMessage'); if (welcomeEl) welcomeEl.textContent = `Selamat Datang, ${userData.nama}!`; if (userData.peran && userData.peran.toLowerCase() !== 'admin') { const btnPengguna = document.querySelector('button[data-section="penggunaSection"]'); const btnSiswa = document.querySelector('button[data-section="siswaSection"]'); if (btnPengguna) btnPengguna.style.display = 'none'; if (btnSiswa) btnSiswa.style.display = 'none'; } } }
+async function handleLogin() { const usernameEl = document.getElementById('username'); const passwordEl = document.getElementById('password'); if (!usernameEl.value || !passwordEl.value) { return showStatusMessage("Username dan password harus diisi.", 'error'); } showLoading(true); const formData = new FormData(); formData.append('action', 'login'); formData.append('username', usernameEl.value); formData.append('password', passwordEl.value); try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }); const result = await response.json(); if (result.status === "success") { sessionStorage.setItem('loggedInUser', JSON.stringify(result.data)); window.location.href = 'dashboard.html'; } else { showStatusMessage(result.message, 'error'); } } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); } finally { showLoading(false); } }
+function handleLogout() { if (confirm('Apakah Anda yakin ingin logout?')) { sessionStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; } }
 
 // --- 3.2. DASHBOARD & DATA GLOBAL (CACHING) ---
 // (Tidak ada perubahan di bagian ini)
@@ -192,87 +83,30 @@ async function loadDashboardStats() { try { const response = await fetch(`${SCRI
 async function refreshSiswaCache() { showLoading(true); try { const response = await fetch(`${SCRIPT_URL}?action=searchSiswa&searchTerm=`); const result = await response.json(); if (result.status === 'success') { cachedSiswaData = result.data; showStatusMessage('Data siswa berhasil diperbarui.', 'success'); } else { showStatusMessage('Gagal memperbarui data siswa.', 'error'); } } catch (error) { showStatusMessage('Kesalahan jaringan saat memperbarui data siswa.', 'error'); } finally { showLoading(false); } }
 function searchSiswa() { const searchTerm = document.getElementById('nisnSearchInput').value.toLowerCase(); const dataToRender = searchTerm ? cachedSiswaData.filter(s => String(s.Nama).toLowerCase().includes(searchTerm) || String(s.NISN).toLowerCase().includes(searchTerm)) : cachedSiswaData; renderSiswaTable(dataToRender); }
 function renderSiswaTable(siswaArray) { const tableBody = document.getElementById('siswaResultsTableBody'); tableBody.innerHTML = ''; if (siswaArray.length === 0) { tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Data siswa tidak ditemukan.</td></tr>'; return; } siswaArray.forEach(siswa => { const tr = document.createElement('tr'); tr.innerHTML = `<td data-label="NISN">${siswa.NISN}</td><td data-label="Nama">${siswa.Nama}</td><td data-label="Kelas">${siswa.Kelas}</td><td data-label="Tahun Ajaran">${siswa.TahunAjaran || ''}</td><td data-label="Aksi"><button class="btn btn-sm btn-secondary" onclick="editSiswaHandler('${siswa.NISN}', '${siswa.TahunAjaran}', '${siswa.Semester}')">Ubah</button><button class="btn btn-sm btn-danger" onclick="deleteSiswaHandler('${siswa.NISN}')">Hapus</button></td>`; tableBody.appendChild(tr); }); }
+async function saveSiswa() { const form = document.getElementById('formSiswa'); const formData = new FormData(form); formData.append('action', 'saveSiswa'); showLoading(true); try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }); const result = await response.json(); if (result.status === 'success') { showStatusMessage(result.message, 'success'); resetFormSiswa(); await refreshSiswaCache(); searchSiswa(); hasLoadedRelationalData = false; initCascadingFilters(); initNilaiCascadingFilters(); } else { showStatusMessage(`Gagal: ${result.message}`, 'error'); } } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); } finally { showLoading(false); } }
+function editSiswaHandler(nisn, tahunAjaran, semester) { const siswa = cachedSiswaData.find(s => s.NISN == nisn && s.TahunAjaran == tahunAjaran && s.Semester == semester); if (!siswa) { console.error("Siswa tidak ditemukan untuk diedit:", nisn, tahunAjaran, semester); return; } document.getElementById('formNisn').value = siswa.NISN; document.getElementById('formNama').value = siswa.Nama; document.getElementById('formKelas').value = siswa.Kelas; document.getElementById('formTahunAjaran').value = siswa.TahunAjaran; document.getElementById('formMapel').value = siswa.MataPelajaran || ''; document.getElementById('formSemesterSiswa').value = siswa.Semester || ''; const saveButton = document.getElementById('saveSiswaButton'); saveButton.textContent = 'Update Data Siswa'; saveButton.classList.add('btn-primary'); document.getElementById('formSiswa').scrollIntoView({ behavior: 'smooth' }); }
+function resetFormSiswa() { document.getElementById('formSiswa').reset(); const saveButton = document.getElementById('saveSiswaButton'); saveButton.textContent = 'Simpan Data Siswa'; saveButton.classList.remove('btn-primary'); }
 
 /**
- * [FUNGSI DIPERBARUI]
- * Fungsi untuk menyimpan data siswa. Tidak lagi membedakan antara "add" dan "update".
- * Logika tersebut kini sepenuhnya ditangani oleh backend.
+ * [FITUR BARU]
+ * Mengisi kolom Nama Siswa secara otomatis berdasarkan NISN yang diinput.
+ * Fungsi ini mencari nama pertama yang cocok dengan NISN yang diberikan dari data cache.
  */
-async function saveSiswa() {
-    const form = document.getElementById('formSiswa');
-    const formData = new FormData(form);
-    
-    // Selalu gunakan aksi 'saveSiswa'. Backend akan menentukan apakah ini 'add' atau 'update'.
-    formData.append('action', 'saveSiswa');
-    
-    showLoading(true);
-    try {
-        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
-        const result = await response.json();
+function autofillNamaSiswa() {
+    const nisnInputEl = document.getElementById('formNisn');
+    const namaInputEl = document.getElementById('formNama');
+    const nisnToFind = nisnInputEl.value.trim();
 
-        if (result.status === 'success') {
-            showStatusMessage(result.message, 'success');
-            resetFormSiswa();
-            await refreshSiswaCache();
-            searchSiswa();
-            // Reset data filter karena mungkin ada tahun ajaran/semester baru
-            hasLoadedRelationalData = false;
-            initCascadingFilters();
-            initNilaiCascadingFilters();
-        } else {
-            showStatusMessage(`Gagal: ${result.message}`, 'error');
+    // Hanya berjalan jika ada NISN dan kolom nama masih kosong
+    // untuk mencegah menimpa nama yang diketik manual.
+    if (nisnToFind && !namaInputEl.value) {
+        // Cari siswa di data cache
+        const siswaDitemukan = cachedSiswaData.find(siswa => String(siswa.NISN) === nisnToFind);
+        
+        if (siswaDitemukan) {
+            namaInputEl.value = siswaDitemukan.Nama;
         }
-    } catch (error) {
-        showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error');
-    } finally {
-        showLoading(false);
     }
-}
-
-/**
- * [FUNGSI DIPERBARUI]
- * Mengisi form dengan data siswa yang dipilih. Tidak lagi menggunakan input tersembunyi.
- */
-function editSiswaHandler(nisn, tahunAjaran, semester) {
-    // Cari siswa berdasarkan kunci komposit untuk memastikan data yang benar diedit
-    const siswa = cachedSiswaData.find(s => 
-        s.NISN == nisn && 
-        s.TahunAjaran == tahunAjaran && 
-        s.Semester == semester
-    );
-
-    if (!siswa) {
-        console.error("Siswa tidak ditemukan untuk diedit:", nisn, tahunAjaran, semester);
-        return;
-    }
-
-    document.getElementById('formNisn').value = siswa.NISN;
-    document.getElementById('formNama').value = siswa.Nama;
-    document.getElementById('formKelas').value = siswa.Kelas;
-    document.getElementById('formTahunAjaran').value = siswa.TahunAjaran;
-    document.getElementById('formMapel').value = siswa.MataPelajaran || '';
-    document.getElementById('formSemesterSiswa').value = siswa.Semester || '';
-
-    // Ubah teks tombol untuk menandakan mode ubah
-    const saveButton = document.getElementById('saveSiswaButton');
-    saveButton.textContent = 'Update Data Siswa';
-    saveButton.classList.add('btn-primary');
-    
-    // Scroll ke form agar terlihat oleh pengguna
-    document.getElementById('formSiswa').scrollIntoView({ behavior: 'smooth' });
-}
-
-/**
- * [FUNGSI DIPERBARUI]
- * Mereset form siswa dan mengembalikan tombol ke state awal.
- */
-function resetFormSiswa() {
-    document.getElementById('formSiswa').reset();
-    
-    // Kembalikan tombol ke teks dan gaya semula
-    const saveButton = document.getElementById('saveSiswaButton');
-    saveButton.textContent = 'Simpan Data Siswa';
-    saveButton.classList.remove('btn-primary');
 }
 
 async function deleteSiswaHandler(nisn) { if (confirm(`Apakah Anda yakin ingin menghapus siswa dengan NISN: ${nisn}? Operasi ini akan menghapus SEMUA data siswa dengan NISN ini di semua semester.`)) { showLoading(true); const formData = new FormData(); formData.append('action', 'deleteSiswa'); formData.append('nisn', nisn); try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }); const result = await response.json(); if (result.status === 'success') { showStatusMessage(result.message, 'success'); await refreshSiswaCache(); searchSiswa(); hasLoadedRelationalData = false; initCascadingFilters(); initNilaiCascadingFilters(); } else { showStatusMessage(`Gagal menghapus: ${result.message}`, 'error'); } } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); } finally { showLoading(false); } } }
@@ -295,7 +129,7 @@ function exportRiwayatToExcel() { const tahun = document.getElementById('riwayat
 // (Tidak ada perubahan di bagian ini)
 async function refreshUserCache() { showLoading(true); try { const response = await fetch(`${SCRIPT_URL}?action=getUsers`); const result = await response.json(); if (result.status === 'success') { cachedUsers = result.data; showStatusMessage('Data pengguna berhasil diperbarui.', 'success'); } else { showStatusMessage('Gagal memperbarui data pengguna.', 'error'); } } catch (error) { showStatusMessage('Kesalahan jaringan saat memuat pengguna.', 'error'); } finally { showLoading(false); } }
 function loadUsers() { renderUsersTable(cachedUsers); }
-function renderUsersTable(usersArray) { const tableBody = document.getElementById('penggunaResultsTableBody'); tableBody.innerHTML = ''; if (usersArray.length === 0) { tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Belum ada pengguna.</td></tr>'; return; } usersArray.forEach(user => { const tr = document.createElement('tr'); tr.innerHTML = `<td data-label="Nama Lengkap">${user.nama}</td><td data-label="Username">${user.username}</td><td data--label="Peran">${user.peran}</td><td data-label="Aksi"><button class="btn btn-sm btn-secondary" onclick="editUserHandler('${user.username}')">Ubah</button><button class="btn btn-sm btn-danger" onclick="deleteUserHandler('${user.username}')">Hapus</button></td>`; tableBody.appendChild(tr); }); }
+function renderUsersTable(usersArray) { const tableBody = document.getElementById('penggunaResultsTableBody'); tableBody.innerHTML = ''; if (usersArray.length === 0) { tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Belum ada pengguna.</td></tr>'; return; } usersArray.forEach(user => { const tr = document.createElement('tr'); tr.innerHTML = `<td data-label="Nama Lengkap">${user.nama}</td><td data-label="Username">${user.username}</td><td data-label="Peran">${user.peran}</td><td data-label="Aksi"><button class="btn btn-sm btn-secondary" onclick="editUserHandler('${user.username}')">Ubah</button><button class="btn btn-sm btn-danger" onclick="deleteUserHandler('${user.username}')">Hapus</button></td>`; tableBody.appendChild(tr); }); }
 async function saveUser() { const oldUsername = document.getElementById('formUsernameOld').value; const action = oldUsername ? 'updateUser' : 'addUser'; const formData = new FormData(); formData.append('action', action); formData.append('nama', document.getElementById('formNamaPengguna').value); formData.append('username', document.getElementById('formUsername').value); formData.append('password', document.getElementById('formPassword').value); formData.append('peran', document.getElementById('formPeran').value); if (oldUsername) formData.append('oldUsername', oldUsername); if (action === 'addUser' && !formData.get('password')) return showStatusMessage('Password wajib diisi untuk pengguna baru.', 'error'); showLoading(true); try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }); const result = await response.json(); if (result.status === 'success') { showStatusMessage(result.message, 'success'); resetFormPengguna(); await refreshUserCache(); loadUsers(); } else { showStatusMessage(`Gagal: ${result.message}`, 'error'); } } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); } finally { showLoading(false); } }
 function editUserHandler(username) { const user = cachedUsers.find(u => u.username === username); if (!user) return; document.getElementById('formUsernameOld').value = user.username; document.getElementById('formNamaPengguna').value = user.nama; document.getElementById('formUsername').value = user.username; document.getElementById('formPeran').value = user.peran; document.getElementById('formPassword').value = ''; document.getElementById('formPassword').placeholder = 'Kosongkan jika tidak diubah'; document.getElementById('savePenggunaButton').textContent = 'Update Pengguna'; document.getElementById('formPengguna').scrollIntoView({ behavior: 'smooth' }); }
 async function deleteUserHandler(username) { const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser')); if (loggedInUser && loggedInUser.username === username) return showStatusMessage('Anda tidak dapat menghapus akun Anda sendiri.', 'error'); if (confirm(`Apakah Anda yakin ingin menghapus pengguna '${username}'?`)) { showLoading(true); const formData = new FormData(); formData.append('action', 'deleteUser'); formData.append('username', username); try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }); const result = await response.json(); if (result.status === 'success') { showStatusMessage(result.message, 'success'); await refreshUserCache(); loadUsers(); } else { showStatusMessage(`Gagal: ${result.message}`, 'error'); } } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); } finally { showLoading(false); } } }
@@ -359,6 +193,10 @@ function setupDashboardListeners() {
     document.getElementById('formSiswa')?.addEventListener('submit', (e) => { e.preventDefault(); saveSiswa(); });
     document.getElementById('resetSiswaButton')?.addEventListener('click', resetFormSiswa);
     document.getElementById('nisnSearchInput')?.addEventListener('keyup', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => searchSiswa(), 400); });
+    
+    // [EVENT BARU] Menambahkan event listener untuk autofill nama siswa
+    document.getElementById('formNisn')?.addEventListener('blur', autofillNamaSiswa);
+
     document.getElementById('formPengguna')?.addEventListener('submit', (e) => { e.preventDefault(); saveUser(); });
     document.getElementById('resetPenggunaButton')?.addEventListener('click', resetFormPengguna);
     loadSiswaUntukNilaiButton?.addEventListener('click', loadSiswaUntukNilai);
