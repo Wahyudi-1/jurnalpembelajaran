@@ -383,7 +383,7 @@ async function checkExistingNilai() {
     }
 }
 
-// --- 3.8. REKAP NILAI ---
+// GANTI FUNGSI LAMA DENGAN VERSI BARU YANG LEBIH AMAN INI:
 async function tampilkanRekapNilai() {
     const filter = {
         tahunAjaran: rekapFilterTahunAjaranEl.value,
@@ -394,20 +394,26 @@ async function tampilkanRekapNilai() {
     if (!filter.tahunAjaran || !filter.semester || !filter.kelas || !filter.mapel) {
         return showStatusMessage('Semua filter harus dipilih untuk menampilkan rekapitulasi.', 'error');
     }
+
     const cacheKey = `${filter.tahunAjaran}_${filter.semester}_${filter.kelas}_${filter.mapel}`;
     areaRekapNilai.classList.remove('hidden');
+
     if (cachedRekapNilai[cacheKey]) {
         showStatusMessage('Menampilkan data dari cache...', 'info', 2000);
         renderRekapTabel(cachedRekapNilai[cacheKey].rekapData, cachedRekapNilai[cacheKey].headers);
         return;
     }
-    loadingRekap.classList.remove('hidden');
+
+    // [PERBAIKAN 1] Pengecekan sebelum menampilkan spinner
+    if (loadingRekap) loadingRekap.classList.remove('hidden');
     rekapTableHead.innerHTML = '';
     rekapTableBody.innerHTML = '';
+
     const params = new URLSearchParams({ action: 'getRekapNilai', ...filter }).toString();
     try {
         const response = await fetch(`${SCRIPT_URL}?${params}`);
         const result = await response.json();
+        
         if (result.status === 'success') {
             cachedRekapNilai[cacheKey] = result.data;
             renderRekapTabel(result.data.rekapData, result.data.headers);
@@ -422,7 +428,8 @@ async function tampilkanRekapNilai() {
     } catch (error) {
         showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error');
     } finally {
-        loadingRekap.classList.add('hidden');
+        // [PERBAIKAN 2] Pengecekan sebelum menyembunyikan spinner
+        if (loadingRekap) loadingRekap.classList.add('hidden');
     }
 }
 function renderRekapTabel(rekapData, headers) {
