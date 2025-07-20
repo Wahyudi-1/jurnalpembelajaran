@@ -272,7 +272,7 @@ async function refreshRiwayatCache() {
         if (result.status === 'success') {
             cachedJurnalHistory = result.data;
             showStatusMessage('Riwayat jurnal berhasil diperbarui.', 'success');
-            applyRiwayatFilter(); // Terapkan kembali filter yang ada dengan data baru
+            applyRiwayatFilter();
         } else { showStatusMessage('Gagal memperbarui riwayat jurnal.', 'error'); }
     } catch (error) { showStatusMessage('Kesalahan jaringan saat memperbarui riwayat.', 'error'); } finally { showLoading(false); }
 }
