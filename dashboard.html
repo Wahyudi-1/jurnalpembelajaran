@@ -96,7 +96,6 @@
                     <div class="form-group">
                         <label for="jenisNilai">Jenis Penilaian (Contoh: Ulangan Harian 1, Tugas 2, PTS, PAS)</label>
                         <input type="text" id="jenisNilai" placeholder="Ketik jenis penilaian di sini..." required autocomplete="off">
-                        <!-- [DITAMBAHKAN] Wadah untuk menampilkan saran/autocomplete -->
                         <div id="jenisNilaiSaran" class="rekomendasi-container hidden"></div>
                     </div>
 
@@ -112,7 +111,8 @@
                                 </tbody>
                             </table>
                             <div class="form-group" style="margin-top: 2rem;">
-                                <button type="button" id="submitNilaiButton" class="btn btn-primary btn-block">Masukkan Nilai</button>
+                                <!-- [DIPERBARUI] Menambahkan atribut data-mode -->
+                                <button type="button" id="submitNilaiButton" class="btn btn-primary btn-block" data-mode="insert">Masukkan Nilai</button>
                             </div>
                         </form>
                     </div>
