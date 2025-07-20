@@ -23,7 +23,6 @@
     <nav class="section-nav">
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
         <button data-section="nilaiSection" class="btn btn-nav">Input Nilai</button>
-        <!-- [DITAMBAHKAN] Tombol navigasi baru untuk Rekap Nilai -->
         <button data-section="rekapSection" class="btn btn-nav">Rekap Nilai</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
         <button data-section="siswaSection" class="btn btn-nav">Manajemen Siswa</button>
@@ -113,7 +112,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian BARU: REKAP NILAI                               -->
+        <!-- Bagian 3: REKAP NILAI                                  -->
         <!-- ====================================================== -->
         <div id="rekapSection" class="content-section" style="display: none;">
             <div class="card">
@@ -129,9 +128,13 @@
                 </div>
                 <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
                 <div id="areaRekapNilai" class="hidden">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
                         <h4>Hasil Rekapitulasi</h4>
-                        <button type="button" id="exportRekapButton" class="btn btn-success">Export ke Excel</button>
+                        <div>
+                            <!-- [DITAMBAHKAN] Tombol Refresh untuk Rekapitulasi -->
+                            <button type="button" id="refreshRekapButton" class="btn btn-secondary" title="Muat ulang data rekap dari server">Refresh</button>
+                            <button type="button" id="exportRekapButton" class="btn btn-success" style="margin-left: 10px;">Export ke Excel</button>
+                        </div>
                     </div>
                     <div id="loadingRekap" class="hidden" style="margin: 20px auto; width: 40px; height: 40px;">
                         <div class="spinner"></div>
@@ -147,7 +150,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 3: RIWAYAT JURNAL                               -->
+        <!-- Bagian 4: RIWAYAT JURNAL                               -->
         <!-- ====================================================== -->
         <div id="riwayatSection" class="content-section" style="display: none;">
             <div class="card">
@@ -184,7 +187,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 4: MANAJEMEN SISWA                              -->
+        <!-- Bagian 5: MANAJEMEN SISWA                              -->
         <!-- ====================================================== -->
         <div id="siswaSection" class="content-section" style="display: none;">
             <div class="card">
@@ -218,7 +221,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 5: MANAJEMEN PENGGUNA                           -->
+        <!-- Bagian 6: MANAJEMEN PENGGUNA                           -->
         <!-- ====================================================== -->
         <div id="penggunaSection" class="content-section" style="display: none;">
             <div class="card">
