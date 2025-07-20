@@ -171,7 +171,14 @@
                     <div class="form-group"><label for="formKelas">Kelas</label><input type="text" id="formKelas" name="Kelas" placeholder="Contoh: X-A"></div>
                     <div class="form-group"><label for="formTahunAjaran">Tahun Ajaran</label><input type="text" id="formTahunAjaran" name="TahunAjaran" placeholder="Contoh: 2024/2025"></div>
                     <div class="form-group"><label for="formMapel">Mata Pelajaran (pisahkan koma jika lebih dari satu)</label><input type="text" id="formMapel" name="MataPelajaran" placeholder="Contoh: Matematika, Fisika"></div>
-                    <div class="form-group"><label for="formSemesterSiswa">Semester</label><input type="text" id="formSemesterSiswa" name="Semester" placeholder="Contoh: Ganjil"></div>
+                    <div class="form-group">
+                        <label for="formSemesterSiswa">Semester</label>
+                        <select id="formSemesterSiswa" name="Semester" required>
+                            <option value="">-- Pilih Semester --</option>
+                            <option value="Ganjil">Ganjil</option>
+                            <option value="Genap">Genap</option>
+                        </select>
+                    </div>                    
                     <div class="form-actions"><button type="submit" id="saveSiswaButton" class="btn btn-accent">Simpan Data Siswa</button><button type="button" id="resetSiswaButton" class="btn btn-secondary">Batal</button></div>
                 </form>
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
