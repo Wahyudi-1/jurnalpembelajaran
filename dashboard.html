@@ -86,7 +86,6 @@
                     <div class="form-group"><label for="riwayatFilterTanggalSelesai">Sampai Tanggal</label><input type="date" id="riwayatFilterTanggalSelesai"></div>
                     <div class="form-group form-group-full">
                         <button type="button" id="filterRiwayatButton" class="btn btn-primary">Terapkan Filter</button>
-                        <!-- [DITAMBAHKAN] Tombol untuk refresh data dari server -->
                         <button type="button" id="refreshRiwayatButton" class="btn btn-secondary" style="margin-left: 10px;" title="Muat ulang data riwayat dari server">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: middle; margin-right: 5px;"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
                             Refresh
@@ -99,7 +98,12 @@
                 <div class="table-container">
                     <table>
                         <thead><tr><th>Tanggal</th><th>Kelas</th><th>Semester</th><th>Mata Pelajaran</th><th>Materi</th><th>Kehadiran</th><th>Aksi</th></tr></thead>
-                        <tbody id="riwayatTableBody"></tbody>
+                        <tbody id="riwayatTableBody">
+                            <!-- [DIPERBARUI] Pesan default saat halaman pertama kali dibuka -->
+                            <tr>
+                                <td colspan="7" style="text-align: center;">Gunakan filter di atas untuk menampilkan riwayat.</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -126,7 +130,6 @@
                 <div class="form-grid">
                     <div class="form-group"><label for="nisnSearchInput">Cari Siswa (NISN/Nama)</label><input type="text" id="nisnSearchInput" placeholder="Ketik untuk mencari..."></div>
                     <div class="form-group" style="align-self: end;">
-                        <!-- [DIPERBARUI] Tombol Cari dihapus, diganti dengan Refresh -->
                         <button type="button" id="refreshSiswaButton" class="btn btn-secondary" title="Muat ulang data siswa dari server">Refresh Data</button>
                         <button type="button" id="exportSiswaExcel" class="btn btn-success" style="margin-left: 10px;">Export</button>
                     </div>
@@ -155,13 +158,10 @@
                     <div class="form-actions"><button type="submit" id="savePenggunaButton" class="btn btn-accent">Simpan Pengguna</button><button type="button" id="resetPenggunaButton" class="btn btn-secondary">Batal</button></div>
                 </form>
                 <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
-                
-                <!-- [DIPERBARUI] Header tabel dengan tombol refresh -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h4>Daftar Pengguna Sistem</h4>
                     <button type="button" id="refreshPenggunaButton" class="btn btn-secondary btn-sm" title="Muat ulang data pengguna dari server">Refresh Data</button>
                 </div>
-                
                 <div class="table-container">
                     <table>
                         <thead><tr><th>Nama Lengkap</th><th>Username</th><th>Peran</th><th>Aksi</th></tr></thead>
