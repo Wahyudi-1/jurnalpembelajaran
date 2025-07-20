@@ -1,15 +1,16 @@
 /**
  * =================================================================
- * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (VERSI DENGAN UX IMPROVEMENT)
+ * SCRIPT UTAMA FRONTEND - JURNAL PEMBELAJARAN (FINAL UX IMPROVEMENT)
  * =================================================================
- * @version 5.6 - Peningkatan UX pada Form Siswa
+ * @version 5.7 - Penyempurnaan Halaman Manajemen Siswa
  * @author Gemini AI Expert for User
  *
  * FITUR UTAMA VERSI INI:
- * - [FITUR] Nama siswa di form Manajemen Siswa akan terisi otomatis setelah NISN diinput
- *   jika NISN tersebut sudah ada di database (cache).
- * - [FITUR] Event listener baru ditambahkan untuk mendukung fitur autofill.
- * - Kode ini disiapkan untuk bekerja dengan HTML yang sudah diubah (input semester menjadi dropdown).
+ * - [FITUR] Tabel Daftar Siswa kini tersembunyi secara default dan hanya muncul saat
+ *   pengguna melakukan pencarian.
+ * - [FITUR] Nama siswa di form akan terisi dan berubah secara dinamis saat NISN diketik,
+ *   memberikan umpan balik instan kepada pengguna.
+ * - [OPTIMASI] Event listener diubah dari 'blur' ke 'input' untuk autofill yang lebih responsif.
  */
 
 // ====================================================================
@@ -81,31 +82,64 @@ async function loadDashboardStats() { try { const response = await fetch(`${SCRI
 
 // --- 3.3. MANAJEMEN SISWA ---
 async function refreshSiswaCache() { showLoading(true); try { const response = await fetch(`${SCRIPT_URL}?action=searchSiswa&searchTerm=`); const result = await response.json(); if (result.status === 'success') { cachedSiswaData = result.data; showStatusMessage('Data siswa berhasil diperbarui.', 'success'); } else { showStatusMessage('Gagal memperbarui data siswa.', 'error'); } } catch (error) { showStatusMessage('Kesalahan jaringan saat memperbarui data siswa.', 'error'); } finally { showLoading(false); } }
-function searchSiswa() { const searchTerm = document.getElementById('nisnSearchInput').value.toLowerCase(); const dataToRender = searchTerm ? cachedSiswaData.filter(s => String(s.Nama).toLowerCase().includes(searchTerm) || String(s.NISN).toLowerCase().includes(searchTerm)) : cachedSiswaData; renderSiswaTable(dataToRender); }
+
+/**
+ * [FUNGSI DIPERBARUI]
+ * Mengontrol visibilitas daftar siswa dan memfilter data berdasarkan input pencarian.
+ */
+function searchSiswa() {
+    const searchInput = document.getElementById('nisnSearchInput');
+    const listWrapper = document.getElementById('siswaListWrapper');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+    if (!listWrapper) return;
+
+    // [LOGIKA BARU] Tampilkan atau sembunyikan wrapper berdasarkan input
+    if (searchTerm.length > 0) {
+        listWrapper.style.display = 'block'; // Tampilkan jika ada input
+    } else {
+        listWrapper.style.display = 'none';  // Sembunyikan jika input kosong
+    }
+
+    const dataToRender = searchTerm
+        ? cachedSiswaData.filter(s => String(s.Nama).toLowerCase().includes(searchTerm) || String(s.NISN).toLowerCase().includes(searchTerm))
+        : []; // Jangan render apa-apa jika input kosong
+
+    renderSiswaTable(dataToRender);
+}
+
 function renderSiswaTable(siswaArray) { const tableBody = document.getElementById('siswaResultsTableBody'); tableBody.innerHTML = ''; if (siswaArray.length === 0) { tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Data siswa tidak ditemukan.</td></tr>'; return; } siswaArray.forEach(siswa => { const tr = document.createElement('tr'); tr.innerHTML = `<td data-label="NISN">${siswa.NISN}</td><td data-label="Nama">${siswa.Nama}</td><td data-label="Kelas">${siswa.Kelas}</td><td data-label="Tahun Ajaran">${siswa.TahunAjaran || ''}</td><td data-label="Aksi"><button class="btn btn-sm btn-secondary" onclick="editSiswaHandler('${siswa.NISN}', '${siswa.TahunAjaran}', '${siswa.Semester}')">Ubah</button><button class="btn btn-sm btn-danger" onclick="deleteSiswaHandler('${siswa.NISN}')">Hapus</button></td>`; tableBody.appendChild(tr); }); }
 async function saveSiswa() { const form = document.getElementById('formSiswa'); const formData = new FormData(form); formData.append('action', 'saveSiswa'); showLoading(true); try { const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData }); const result = await response.json(); if (result.status === 'success') { showStatusMessage(result.message, 'success'); resetFormSiswa(); await refreshSiswaCache(); searchSiswa(); hasLoadedRelationalData = false; initCascadingFilters(); initNilaiCascadingFilters(); } else { showStatusMessage(`Gagal: ${result.message}`, 'error'); } } catch (error) { showStatusMessage(`Terjadi kesalahan jaringan: ${error.message}`, 'error'); } finally { showLoading(false); } }
 function editSiswaHandler(nisn, tahunAjaran, semester) { const siswa = cachedSiswaData.find(s => s.NISN == nisn && s.TahunAjaran == tahunAjaran && s.Semester == semester); if (!siswa) { console.error("Siswa tidak ditemukan untuk diedit:", nisn, tahunAjaran, semester); return; } document.getElementById('formNisn').value = siswa.NISN; document.getElementById('formNama').value = siswa.Nama; document.getElementById('formKelas').value = siswa.Kelas; document.getElementById('formTahunAjaran').value = siswa.TahunAjaran; document.getElementById('formMapel').value = siswa.MataPelajaran || ''; document.getElementById('formSemesterSiswa').value = siswa.Semester || ''; const saveButton = document.getElementById('saveSiswaButton'); saveButton.textContent = 'Update Data Siswa'; saveButton.classList.add('btn-primary'); document.getElementById('formSiswa').scrollIntoView({ behavior: 'smooth' }); }
 function resetFormSiswa() { document.getElementById('formSiswa').reset(); const saveButton = document.getElementById('saveSiswaButton'); saveButton.textContent = 'Simpan Data Siswa'; saveButton.classList.remove('btn-primary'); }
 
 /**
- * [FITUR BARU]
- * Mengisi kolom Nama Siswa secara otomatis berdasarkan NISN yang diinput.
- * Fungsi ini mencari nama pertama yang cocok dengan NISN yang diberikan dari data cache.
+ * [FUNGSI DIPERBARUI]
+ * Mengisi kolom Nama Siswa secara otomatis saat NISN diketik.
+ * Juga akan mengosongkan kolom nama jika NISN diubah dan tidak ditemukan.
  */
 function autofillNamaSiswa() {
     const nisnInputEl = document.getElementById('formNisn');
     const namaInputEl = document.getElementById('formNama');
     const nisnToFind = nisnInputEl.value.trim();
 
-    // Hanya berjalan jika ada NISN dan kolom nama masih kosong
-    // untuk mencegah menimpa nama yang diketik manual.
-    if (nisnToFind && !namaInputEl.value) {
-        // Cari siswa di data cache
+    // Pencegahan: Jangan jalankan jika pengguna sedang fokus mengetik di kolom nama
+    if (document.activeElement === namaInputEl) {
+        return;
+    }
+
+    if (nisnToFind) {
         const siswaDitemukan = cachedSiswaData.find(siswa => String(siswa.NISN) === nisnToFind);
         
         if (siswaDitemukan) {
             namaInputEl.value = siswaDitemukan.Nama;
+        } else {
+            // Jika NISN diketik tapi tidak ada di cache, kosongkan nama
+            namaInputEl.value = ''; 
         }
+    } else {
+        // Jika input NISN kosong, kosongkan juga nama
+        namaInputEl.value = '';
     }
 }
 
@@ -167,7 +201,11 @@ function setupDashboardListeners() {
             } else if (sectionId === 'jurnalSection') {
                 loadDashboardStats();
             } else if (sectionId === 'siswaSection') {
-                searchSiswa();
+                // Saat tab siswa aktif, pastikan daftar siswa tersembunyi
+                const listWrapper = document.getElementById('siswaListWrapper');
+                if (listWrapper) listWrapper.style.display = 'none';
+                const searchInput = document.getElementById('nisnSearchInput');
+                if (searchInput) searchInput.value = '';
             }
         });
     });
@@ -192,10 +230,12 @@ function setupDashboardListeners() {
     document.getElementById('exportRiwayatButton')?.addEventListener('click', exportRiwayatToExcel);
     document.getElementById('formSiswa')?.addEventListener('submit', (e) => { e.preventDefault(); saveSiswa(); });
     document.getElementById('resetSiswaButton')?.addEventListener('click', resetFormSiswa);
+    
+    // Menggunakan 'keyup' untuk deteksi yang lebih baik termasuk saat menghapus teks
     document.getElementById('nisnSearchInput')?.addEventListener('keyup', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => searchSiswa(), 400); });
     
-    // [EVENT BARU] Menambahkan event listener untuk autofill nama siswa
-    document.getElementById('formNisn')?.addEventListener('blur', autofillNamaSiswa);
+    // [EVENT DIPERBARUI] Menggunakan 'input' untuk reaksi yang lebih cepat pada autofill
+    document.getElementById('formNisn')?.addEventListener('input', autofillNamaSiswa);
 
     document.getElementById('formPengguna')?.addEventListener('submit', (e) => { e.preventDefault(); saveUser(); });
     document.getElementById('resetPenggunaButton')?.addEventListener('click', resetFormPengguna);
