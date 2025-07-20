@@ -23,6 +23,8 @@
     <nav class="section-nav">
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
         <button data-section="nilaiSection" class="btn btn-nav">Input Nilai</button>
+        <!-- [DITAMBAHKAN] Tombol navigasi baru untuk Rekap Nilai -->
+        <button data-section="rekapSection" class="btn btn-nav">Rekap Nilai</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
         <button data-section="siswaSection" class="btn btn-nav">Manajemen Siswa</button>
         <button data-section="penggunaSection" class="btn btn-nav">Manajemen Pengguna</button>
@@ -78,46 +80,69 @@
         <div id="nilaiSection" class="content-section" style="display: none;">
             <div class="card">
                 <div class="card-header">Input Nilai Siswa</div>
-                
                 <div class="form-grid">
                     <div class="form-group"><label for="nilaiFilterTahunAjaran">Tahun Ajaran</label><select id="nilaiFilterTahunAjaran" required></select></div>
                     <div class="form-group"><label for="nilaiFilterSemester">Semester</label><select id="nilaiFilterSemester" required disabled></select></div>
                     <div class="form-group"><label for="nilaiFilterKelas">Kelas</label><select id="nilaiFilterKelas" required disabled></select></div>
                     <div class="form-group form-group-full"><label for="nilaiFilterMataPelajaran">Mata Pelajaran</label><select id="nilaiFilterMataPelajaran" required disabled></select></div>
                 </div>
-                
                 <div class="form-group" style="margin-top: 1.5rem;">
                     <button type="button" id="loadSiswaUntukNilaiButton" class="btn btn-secondary btn-block">Tampilkan Siswa untuk Penilaian</button>
                 </div>
-
                 <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
-
                 <div id="areaInputNilai" class="hidden">
                     <div class="form-group">
                         <label for="jenisNilai">Jenis Penilaian (Contoh: Ulangan Harian 1, Tugas 2, PTS, PAS)</label>
                         <input type="text" id="jenisNilai" placeholder="Ketik jenis penilaian di sini..." required autocomplete="off">
                         <div id="jenisNilaiSaran" class="rekomendasi-container hidden"></div>
                     </div>
-
                     <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Daftar Nilai Siswa</h4>
                     <div class="table-container">
                         <form id="formNilai">
                             <table>
-                                <thead id="nilaiTableHead">
-                                    <!-- Header tabel akan dibuat dinamis oleh JavaScript -->
-                                </thead>
-                                <tbody id="nilaiTableBody">
-                                    <!-- Baris tabel akan dibuat dinamis oleh JavaScript -->
-                                </tbody>
+                                <thead id="nilaiTableHead"></thead>
+                                <tbody id="nilaiTableBody"></tbody>
                             </table>
                             <div class="form-group" style="margin-top: 2rem;">
-                                <!-- [DIPERBARUI] Menambahkan atribut data-mode -->
                                 <button type="button" id="submitNilaiButton" class="btn btn-primary btn-block" data-mode="insert">Masukkan Nilai</button>
                             </div>
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
 
+        <!-- ====================================================== -->
+        <!-- Bagian BARU: REKAP NILAI                               -->
+        <!-- ====================================================== -->
+        <div id="rekapSection" class="content-section" style="display: none;">
+            <div class="card">
+                <div class="card-header">Rekapitulasi Nilai Siswa</div>
+                <div class="form-grid">
+                    <div class="form-group"><label for="rekapFilterTahunAjaran">Tahun Ajaran</label><select id="rekapFilterTahunAjaran" required></select></div>
+                    <div class="form-group"><label for="rekapFilterSemester">Semester</label><select id="rekapFilterSemester" required disabled></select></div>
+                    <div class="form-group"><label for="rekapFilterKelas">Kelas</label><select id="rekapFilterKelas" required disabled></select></div>
+                    <div class="form-group form-group-full"><label for="rekapFilterMataPelajaran">Mata Pelajaran</label><select id="rekapFilterMataPelajaran" required disabled></select></div>
+                </div>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <button type="button" id="tampilkanRekapButton" class="btn btn-primary btn-block">Tampilkan Rekapitulasi Nilai</button>
+                </div>
+                <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+                <div id="areaRekapNilai" class="hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4>Hasil Rekapitulasi</h4>
+                        <button type="button" id="exportRekapButton" class="btn btn-success">Export ke Excel</button>
+                    </div>
+                    <div id="loadingRekap" class="hidden" style="margin: 20px auto; width: 40px; height: 40px;">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="table-container">
+                        <table id="tabelRekap">
+                            <thead id="rekapTableHead"></thead>
+                            <tbody id="rekapTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
