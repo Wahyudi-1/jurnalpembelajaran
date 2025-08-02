@@ -23,6 +23,8 @@
     <nav class="section-nav">
         <button data-section="jurnalSection" class="btn btn-nav">Input Jurnal</button>
         <button data-section="nilaiSection" class="btn btn-nav">Input Nilai</button>
+        <!-- [DITAMBAHKAN] Tombol navigasi untuk Rekap Nilai -->
+        <button data-section="rekapSection" class="btn btn-nav">Rekap Nilai</button>
         <button data-section="riwayatSection" class="btn btn-nav">Riwayat Jurnal</button>
         <button data-section="siswaSection" class="btn btn-nav">Manajemen Siswa</button>
         <button data-section="penggunaSection" class="btn btn-nav">Manajemen Pengguna</button>
@@ -49,7 +51,6 @@
             <div class="card">
                 <div class="card-header">Input Jurnal Pembelajaran</div>
                 <form id="formJurnal">
-                    <!-- [PERUBAHAN] Menambahkan input tersembunyi untuk menyimpan ID saat mengedit -->
                     <input type="hidden" id="jurnalIdToUpdate">
                     
                     <div class="form-grid">
@@ -117,7 +118,6 @@
                                 </tbody>
                             </table>
                             <div class="form-group" style="margin-top: 2rem;">
-                                <!-- [DIPERBARUI] Menambahkan atribut data-mode -->
                                 <button type="button" id="submitNilaiButton" class="btn btn-primary btn-block" data-mode="insert">Masukkan Nilai</button>
                             </div>
                         </form>
@@ -128,7 +128,44 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 3: RIWAYAT JURNAL                               -->
+        <!-- [DITAMBAHKAN] Bagian 3: REKAP NILAI                    -->
+        <!-- ====================================================== -->
+        <div id="rekapSection" class="content-section" style="display: none;">
+            <div class="card">
+                <div class="card-header">Rekapitulasi Nilai Siswa</div>
+                <div class="form-grid">
+                    <div class="form-group"><label for="rekapFilterTahunAjaran">Tahun Ajaran</label><select id="rekapFilterTahunAjaran" required></select></div>
+                    <div class="form-group"><label for="rekapFilterSemester">Semester</label><select id="rekapFilterSemester" required disabled></select></div>
+                    <div class="form-group"><label for="rekapFilterKelas">Kelas</label><select id="rekapFilterKelas" required disabled></select></div>
+                    <div class="form-group form-group-full"><label for="rekapFilterMataPelajaran">Mata Pelajaran</label><select id="rekapFilterMataPelajaran" required disabled></select></div>
+                </div>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <button type="button" id="tampilkanRekapButton" class="btn btn-primary btn-block">Tampilkan Rekapitulasi Nilai</button>
+                </div>
+                <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+                <div id="areaRekapNilai" class="hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
+                        <h4>Hasil Rekapitulasi</h4>
+                        <div>
+                            <button type="button" id="refreshRekapButton" class="btn btn-secondary" title="Muat ulang data rekap dari server">Refresh</button>
+                            <button type="button" id="exportRekapButton" class="btn btn-success" style="margin-left: 10px;">Export ke Excel</button>
+                        </div>
+                    </div>
+                    <div id="loadingRekap" class="hidden" style="margin: 20px auto; width: 40px; height: 40px;">
+                       <!-- Spinner akan muncul di sini jika diperlukan -->
+                    </div>
+                    <div class="table-container">
+                        <table id="tabelRekap">
+                            <thead id="rekapTableHead"></thead>
+                            <tbody id="rekapTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====================================================== -->
+        <!-- Bagian 4: RIWAYAT JURNAL                               -->
         <!-- ====================================================== -->
         <div id="riwayatSection" class="content-section" style="display: none;">
             <div class="card">
@@ -165,7 +202,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 4: MANAJEMEN SISWA                              -->
+        <!-- Bagian 5: MANAJEMEN SISWA                              -->
         <!-- ====================================================== -->
         <div id="siswaSection" class="content-section" style="display: none;">
             <div class="card">
@@ -206,7 +243,7 @@
         </div>
 
         <!-- ====================================================== -->
-        <!-- Bagian 5: MANAJEMEN PENGGUNA                           -->
+        <!-- Bagian 6: MANAJEMEN PENGGUNA                           -->
         <!-- ====================================================== -->
         <div id="penggunaSection" class="content-section" style="display: none;">
             <div class="card">
